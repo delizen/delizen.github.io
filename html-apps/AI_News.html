@@ -321,17 +321,18 @@
         
         function updateApiStatus(isConnected) {
             const statusElement = document.getElementById('api-status');
-            const statusIcon = statusElement.querySelector('.api-status-icon');
-            const statusText = statusElement.querySelector('span');
+            if (!statusElement) return;
             
             if (isConnected) {
-                statusElement.className = 'api-status connected';
-                statusIcon.className = 'api-status-icon connected';
-                statusText.textContent = 'API key saved';
+                statusElement.innerHTML = `
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                    <span class="text-green-600">API key saved</span>
+                `;
             } else {
-                statusElement.className = 'api-status not-connected';
-                statusIcon.className = 'api-status-icon not-connected';
-                statusText.textContent = 'API key not set';
+                statusElement.innerHTML = `
+                    <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                    <span class="text-red-600">API key not set</span>
+                `;
             }
         }
         
@@ -417,7 +418,7 @@
                 throw new Error("API key is required. Please add your Gemini API key to use this feature.");
             }
             
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
             
             const systemPrompt = "You are a professional AI News Editor. Summarize the top 3 most important AI news developments and breakthroughs from the last 24 hours in a single, well-formatted Markdown list. Each item should be concise (1-2 sentences) and capture the essence of the news. Do not include any introductory or concluding remarks, just the list. Use markdown bullet points (* or -) for the list.";
             
@@ -437,11 +438,18 @@
             
             for (let attempt = 0; attempt < maxRetries; attempt++) {
                 try {
+                    // Create an AbortController with a timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+                    
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
 
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -468,15 +476,25 @@
             const newsContent = document.getElementById('news-content');
             const citationList = document.getElementById('citation-list');
             const noSources = document.getElementById('no-sources');
+            const loadingState = document.getElementById('loading-state');
+            const contentState = document.getElementById('content-state');
+            const errorState = document.getElementById('error-state');
+
+            // Check if elements exist
+            if (!newsContent || !citationList) {
+                console.error('Required DOM elements not found');
+                return;
+            }
 
             // 1. Render the News Summary
             newsContent.innerHTML = convertMarkdownListToHtml(newsText);
             
             // 2. Render the Citations
             citationList.innerHTML = '';
-            if (sources.length > 0) {
-                noSources.classList.add('hidden');
+            if (sources && sources.length > 0) {
+                if (noSources) noSources.classList.add('hidden');
                 sources.forEach(source => {
+                    if (!source.uri) return;
                     const link = document.createElement('a');
                     link.href = source.uri;
                     link.textContent = source.title || source.uri;
@@ -486,20 +504,27 @@
                     citationList.appendChild(link);
                 });
             } else {
-                noSources.classList.remove('hidden');
+                if (noSources) noSources.classList.remove('hidden');
             }
 
             // 3. Update UI state
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('content-state').classList.remove('hidden');
-            document.getElementById('error-state').classList.add('hidden');
+            if (loadingState) loadingState.classList.add('hidden');
+            if (contentState) contentState.classList.remove('hidden');
+            if (errorState) errorState.classList.add('hidden');
         }
 
         function renderError(message) {
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('content-state').classList.add('hidden');
-            document.getElementById('error-state').classList.remove('hidden');
-            document.getElementById('error-message').textContent = message;
+            const loadingState = document.getElementById('loading-state');
+            const contentState = document.getElementById('content-state');
+            const errorState = document.getElementById('error-state');
+            const errorMessage = document.getElementById('error-message');
+            
+            if (loadingState) loadingState.classList.add('hidden');
+            if (contentState) contentState.classList.add('hidden');
+            if (errorState) errorState.classList.remove('hidden');
+            if (errorMessage) errorMessage.textContent = message || 'An unknown error occurred';
+            
+            console.error('Error:', message);
         }
 
         // --- Event Handlers ---
