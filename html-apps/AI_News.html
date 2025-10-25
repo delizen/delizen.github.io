@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily AI News Brief</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .card {
+            background-color: var(--card-background);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            transition: all 0.2s ease;
+            transform: translateY(0);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Custom markdown styling for the news list */
+        #news-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        #news-content li {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            background-color: rgba(79, 70, 229, 0.05);
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        #news-content li:hover {
+            background-color: rgba(79, 70, 229, 0.1);
+            transform: translateX(4px);
+        }
+        
+        #news-content p {
+            margin-top: 0.75rem;
+        }
+        
+        .citation-link {
+            transition: all 0.2s ease;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .citation-link:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+        
+        .citation-link::after {
+            content: '→';
+            position: absolute;
+            opacity: 0;
+            right: -1.25rem;
+            transition: all 0.2s ease;
+        }
+        
+        .citation-link:hover::after {
+            opacity: 1;
+            right: -1.5rem;
+        }
+        
+        .refresh-icon {
+            transition: transform 0.5s ease;
+        }
+        
+        .btn:hover .refresh-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-800 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                    AI Intelligence Briefing
+                </h1>
+                <p id="current-date" class="text-xl text-gray-500 mt-2"></p>
+            </div>
+            <button id="refresh-button" class="btn mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg flex items-center shadow-md">
+                <svg class="refresh-icon w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Refresh News
+            </button>
+        </header>
+
+        <!-- Main News Card -->
+        <div id="news-card" class="card p-6 md:p-8 border border-gray-100">
+            <div id="loading-state" class="flex flex-col items-center justify-center p-12">
+                <div class="loading-spinner"></div>
+                <p class="mt-6 text-lg text-gray-600 font-medium">Gathering the latest AI headlines...</p>
+                <p class="text-sm text-gray-500 mt-2">Connecting to Gemini API</p>
+            </div>
+
+            <div id="content-state" class="hidden">
+                <div class="flex items-center mb-6">
+                    <div class="w-2 h-8 bg-indigo-600 rounded-full mr-3"></div>
+                    <h2 class="text-2xl font-bold text-gray-800">Top Developments Today</h2>
+                </div>
+                
+                <div id="news-content" class="text-gray-700 leading-relaxed">
+                    <!-- News Summary will be inserted here -->
+                </div>
+
+                <div id="sources-container" class="mt-10 pt-6 border-t border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                        </svg>
+                        Sources
+                    </h3>
+                    <div id="citation-list" class="text-sm space-y-3 text-gray-600 grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <!-- Citations will be inserted here -->
+                    </div>
+                    <p id="no-sources" class="text-sm text-gray-500 italic hidden mt-2">No external sources were directly cited for this summary.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Error State -->
+        <div id="error-state" class="hidden mt-8 card bg-red-50 p-6 rounded-xl border border-red-200 text-red-700">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="font-semibold">Error retrieving news</p>
+            </div>
+            <p id="error-message" class="mt-2 text-sm"></p>
+            <button id="retry-button" class="mt-4 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg flex items-center shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Try Again
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>Powered by Google Gemini API</p>
+            <p class="mt-1">© 2023 Delizen</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        // Global variables provided by the Canvas environment
+        const apiKey = ""; // Leave as empty string; API key is injected by the environment.
+        
+        // --- Utility Functions ---
+
+        function updateDate() {
+            const dateElement = document.getElementById('current-date');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+        }
+
+        // Simple function to convert markdown list to HTML for display
+        function convertMarkdownListToHtml(markdown) {
+            const lines = markdown.split('\n');
+            let html = '<ul>';
+            lines.forEach(line => {
+                if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+                    const content = line.trim().substring(2).trim();
+                    html += `<li>${content}</li>`;
+                } else if (line.trim().length > 0) {
+                    html += `<li>${line.trim()}</li>`; // Handle case where list marker might be missing
+                }
+            });
+            html += '</ul>';
+            return html;
+        }
+
+        /**
+         * Parses the API response to extract the generated text and grounding sources.
+         * @param {object} result - The parsed JSON response from the Gemini API.
+         * @returns {{text: string, sources: {uri: string, title: string}[]}}
+         */
+        function parseGeminiResponse(result) {
+            const candidate = result.candidates?.[0];
+            let text = '';
+            let sources = [];
+
+            if (candidate && candidate.content?.parts?.[0]?.text) {
+                text = candidate.content.parts[0].text;
+                
+                const groundingMetadata = candidate.groundingMetadata;
+                if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                    sources = groundingMetadata.groundingAttributions
+                        .map(attribution => ({
+                            uri: attribution.web?.uri,
+                            title: attribution.web?.title,
+                        }))
+                        .filter(source => source.uri && source.title); // Ensure sources are valid
+                }
+            }
+
+            return { text, sources };
+        }
+
+        // --- Core Logic ---
+
+        async function fetchAINews() {
+            // Show loading state
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('content-state').classList.add('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+            
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const systemPrompt = "You are a professional AI News Editor. Summarize the top 3 most important AI news developments and breakthroughs from the last 24 hours in a single, well-formatted Markdown list. Each item should be concise (1-2 sentences) and capture the essence of the news. Do not include any introductory or concluding remarks, just the list. Use markdown bullet points (* or -) for the list.";
+            
+            const userQuery = "Provide today's top AI news briefing. Focus on research breakthroughs, major company announcements, and regulatory updates.";
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                // Use Google Search grounding to fetch real-time news
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            const maxRetries = 5;
+            let delay = 1000; // 1 second
+            
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API returned status ${response.status}: ${errorData.error.message}`);
+                    }
+
+                    const result = await response.json();
+                    return result;
+
+                } catch (error) {
+                    console.error(`Attempt ${attempt + 1} failed:`, error.message);
+                    if (attempt < maxRetries - 1) {
+                        // Implement exponential backoff
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
+                    } else {
+                        throw new Error(`Failed to fetch AI news after ${maxRetries} attempts. Details: ${error.message}`);
+                    }
+                }
+            }
+        }
+
+        function renderNews(newsText, sources) {
+            const newsContent = document.getElementById('news-content');
+            const citationList = document.getElementById('citation-list');
+            const noSources = document.getElementById('no-sources');
+
+            // 1. Render the News Summary
+            newsContent.innerHTML = convertMarkdownListToHtml(newsText);
+            
+            // 2. Render the Citations
+            citationList.innerHTML = '';
+            if (sources.length > 0) {
+                noSources.classList.add('hidden');
+                sources.forEach(source => {
+                    const link = document.createElement('a');
+                    link.href = source.uri;
+                    link.textContent = source.title || source.uri;
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+                    link.className = "citation-link block truncate text-indigo-600 hover:text-indigo-800 py-1";
+                    citationList.appendChild(link);
+                });
+            } else {
+                noSources.classList.remove('hidden');
+            }
+
+            // 3. Update UI state
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('content-state').classList.remove('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+        }
+
+        function renderError(message) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('content-state').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // --- Event Handlers ---
+        
+        async function refreshNews() {
+            try {
+                const apiResponse = await fetchAINews();
+                const { text, sources } = parseGeminiResponse(apiResponse);
+                if (text) {
+                    renderNews(text, sources);
+                } else {
+                    renderError("The model returned an empty response. Please try again.");
+                }
+            } catch (error) {
+                renderError(error.message);
+            }
+        }
+
+        // --- Initialization ---
+
+        window.onload = async () => {
+            updateDate();
+            
+            // Add event listeners
+            document.getElementById('refresh-button').addEventListener('click', refreshNews);
+            document.getElementById('retry-button').addEventListener('click', refreshNews);
+            
+            // Initial fetch
+            try {
+                const apiResponse = await fetchAINews();
+                const { text, sources } = parseGeminiResponse(apiResponse);
+                if (text) {
+                    renderNews(text, sources);
+                } else {
+                    renderError("The model returned an empty response. Please try again.");
+                }
+            } catch (error) {
+                renderError(error.message);
+            }
+        };
+
+    </script>
+</body>
+</html>
+
