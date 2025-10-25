@@ -720,43 +720,6 @@
 
       <!-- Main News Card -->
       <div id="news-card" class="card">
-        <!-- API Key Form -->
-        <div id="api-key-form" class="p-6 mb-4 border-b">
-          <div class="form-group">
-            <label for="gemini-api-key" class="form-label text-primary"
-              >Gemini API Key</label
-            >
-            <input
-              type="password"
-              id="gemini-api-key"
-              class="form-control"
-              placeholder="Enter your Gemini API key"
-              autocomplete="off"
-            />
-            <div
-              id="api-status"
-              class="flex items-center mt-2 text-sm text-error"
-            >
-              <span class="status-indicator status-error"></span>
-              <span>API key not set</span>
-            </div>
-          </div>
-          <div class="flex gap-2 mt-4 flex-wrap">
-            <button id="save-api-key" class="btn btn-primary btn-sm">
-              Save API Key
-            </button>
-            <button id="clear-api-key" class="btn btn-danger btn-sm">
-              Clear Key
-            </button>
-            <button id="toggle-mock-data" class="btn btn-outline btn-sm">
-              Use Mock Data
-            </button>
-          </div>
-          <p class="mt-2 text-sm text-secondary">
-            Your API key is stored securely in your browser's local storage.
-          </p>
-        </div>
-
         <div
           id="loading-state"
           class="flex flex-col items-center justify-center p-12"
@@ -857,10 +820,47 @@
         </button>
       </div>
 
+      <!-- API Key Form -->
+      <div id="api-key-form" class="p-6 mb-4 border-b">
+        <div class="form-group">
+          <label for="gemini-api-key" class="form-label text-primary"
+            >Gemini API Key</label
+          >
+          <input
+            type="password"
+            id="gemini-api-key"
+            class="form-control"
+            placeholder="Enter your Gemini API key"
+            autocomplete="off"
+          />
+          <div
+            id="api-status"
+            class="flex items-center mt-2 text-sm text-error"
+          >
+            <span class="status-indicator status-error"></span>
+            <span>API key not set</span>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-4 flex-wrap">
+          <button id="save-api-key" class="btn btn-primary btn-sm">
+            Save API Key
+          </button>
+          <button id="clear-api-key" class="btn btn-danger btn-sm">
+            Clear Key
+          </button>
+          <button id="toggle-mock-data" class="btn btn-outline btn-sm">
+            Use Mock Data
+          </button>
+        </div>
+        <p class="mt-2 text-sm text-secondary">
+          Your API key is stored securely in your browser's local storage.
+        </p>
+      </div>
+
       <!-- Footer -->
       <footer class="mt-12 text-center text-secondary text-sm">
         <p>Powered by Google Gemini API</p>
-        <p class="mt-1">© 2023 Delizen</p>
+        <p class="mt-1">© 2025 Delizen</p>
       </footer>
     </div>
 
