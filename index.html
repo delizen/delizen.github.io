@@ -1,31 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Delizen Local HTML App</title>
+    <style>
+      :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #6b8cae;
+        --accent-color: #ff6b6b;
+        --background-color: #f8f9fa;
+        --text-color: #333;
+        --light-gray: #e9ecef;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--background-color);
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
+      header {
+        margin-bottom: 2rem;
+        text-align: center;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--light-gray);
+      }
+      
+      h1 {
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+      }
+      
+      .app-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      
+      .app-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .app-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .app-card h2 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+      }
+      
+      .app-card a {
+        display: inline-block;
+        text-decoration: none;
+        color: white;
+        background-color: var(--primary-color);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+      }
+      
+      .app-card a:hover {
+        background-color: var(--secondary-color);
+      }
+      
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 2px solid var(--light-gray);
+        color: #666;
+        font-size: 0.9rem;
+      }
+      
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+        
+        .app-container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
-  <body style="font-family: Arial, sans-serif; color: #222; line-height: 1.6">
-    <h2>Delizen Local HTML App</h2>
-    <ul>
-      <li>
-        <link
-          type="text/html"
-          title="Daily Discipline Gamify"
-          href="/Discipline_Gamify.html"
-        />
-      </li>
-      <li>
-        <link
-          type="text/html"
-          title="Daily Habit Gamify"
-          href="/html-apps/Habit_Gamify.html"
-        />
-      </li>
-    </ul>
-    <p><em>{{insight}}</em></p>
-    <p>🔗 <a href="{{url}}">阅读全文</a></p>
-    <hr />
-    {{/each}}
-    <p>— Delizen Local HTML App (Browser Storage)</p>
+  <body>
+    <header>
+      <h1>Delizen Local HTML App</h1>
+      <p>A collection of useful web applications</p>
+    </header>
+    
+    <main>
+      <section class="app-container">
+        <article class="app-card">
+          <h2>Daily Discipline Gamify</h2>
+          <p>Track and gamify your daily discipline activities.</p>
+          <a href="/Discipline_Gamify.html">Open App</a>
+        </article>
+        
+        <article class="app-card">
+          <h2>Daily Habit Gamify</h2>
+          <p>Build and maintain positive habits through gamification.</p>
+          <a href="/html-apps/Habit_Gamify.html">Open App</a>
+        </article>
+      </section>
+    </main>
+    
+    <footer>
+      <p>— Delizen Local HTML App (Browser Storage)</p>
+      <p>&copy; 2023 Delizen</p>
+    </footer>
   </body>
 </html>
