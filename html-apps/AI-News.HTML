@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily AI News Brief</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            color: #1f2937;
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .loading-spinner {
+            border-top-color: #3b82f6;
+            -webkit-animation: spin 1s ease-in-out infinite;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Custom markdown styling for the news list */
+        #news-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        #news-content li {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            border-left: 3px solid #3b82f6;
+            padding-top: 0.25rem;
+        }
+        #news-content li::before {
+            content: '•';
+            position: absolute;
+            left: -8px;
+            top: 0.1rem;
+            color: #3b82f6;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        #news-content p {
+            margin-top: 0.5rem;
+        }
+        .citation-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 tracking-tight">
+                AI Intelligence Briefing
+            </h1>
+            <p id="current-date" class="text-xl text-gray-500 mt-2"></p>
+        </header>
+
+        <!-- Main News Card -->
+        <div id="news-card" class="card bg-white p-6 md:p-8 rounded-xl border border-gray-200">
+            <div id="loading-state" class="flex flex-col items-center justify-center p-12">
+                <div class="loading-spinner w-8 h-8 border-4 rounded-full"></div>
+                <p class="mt-4 text-lg text-gray-600">Gathering the latest AI headlines...</p>
+            </div>
+
+            <div id="content-state" class="hidden">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-700">Top Developments Today</h2>
+                <div id="news-content" class="text-gray-700 leading-relaxed">
+                    <!-- News Summary will be inserted here -->
+                </div>
+
+                <div id="sources-container" class="mt-8 pt-6 border-t border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-600 mb-3">Sources (Grounding Data)</h3>
+                    <div id="citation-list" class="text-sm space-y-2 text-gray-500">
+                        <!-- Citations will be inserted here -->
+                    </div>
+                    <p id="no-sources" class="text-sm text-gray-500 italic hidden">No external sources were directly cited for this summary.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Error State -->
+        <div id="error-state" class="hidden mt-8 card bg-red-50 p-6 rounded-xl border border-red-200 text-red-700">
+            <p class="font-semibold">Error retrieving news:</p>
+            <p id="error-message" class="mt-2 text-sm"></p>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // Global variables provided by the Canvas environment
+        const apiKey = ""; // Leave as empty string; API key is injected by the environment.
+        
+        // --- Utility Functions ---
+
+        function updateDate() {
+            const dateElement = document.getElementById('current-date');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+        }
+
+        // Simple function to convert markdown list to HTML for display
+        function convertMarkdownListToHtml(markdown) {
+            const lines = markdown.split('\n');
+            let html = '<ul>';
+            lines.forEach(line => {
+                if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+                    const content = line.trim().substring(2).trim();
+                    html += `<li>${content}</li>`;
+                } else if (line.trim().length > 0) {
+                    html += `<li>${line.trim()}</li>`; // Handle case where list marker might be missing
+                }
+            });
+            html += '</ul>';
+            return html;
+        }
+
+        /**
+         * Parses the API response to extract the generated text and grounding sources.
+         * @param {object} result - The parsed JSON response from the Gemini API.
+         * @returns {{text: string, sources: {uri: string, title: string}[]}}
+         */
+        function parseGeminiResponse(result) {
+            const candidate = result.candidates?.[0];
+            let text = '';
+            let sources = [];
+
+            if (candidate && candidate.content?.parts?.[0]?.text) {
+                text = candidate.content.parts[0].text;
+                
+                const groundingMetadata = candidate.groundingMetadata;
+                if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                    sources = groundingMetadata.groundingAttributions
+                        .map(attribution => ({
+                            uri: attribution.web?.uri,
+                            title: attribution.web?.title,
+                        }))
+                        .filter(source => source.uri && source.title); // Ensure sources are valid
+                }
+            }
+
+            return { text, sources };
+        }
+
+        // --- Core Logic ---
+
+        async function fetchAINews() {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const systemPrompt = "You are a professional AI News Editor. Summarize the top 3 most important AI news developments and breakthroughs from the last 24 hours in a single, well-formatted Markdown list. Each item should be concise (1-2 sentences) and capture the essence of the news. Do not include any introductory or concluding remarks, just the list. Use markdown bullet points (* or -) for the list.";
+            
+            const userQuery = "Provide today's top AI news briefing. Focus on research breakthroughs, major company announcements, and regulatory updates.";
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                // Use Google Search grounding to fetch real-time news
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            const maxRetries = 5;
+            let delay = 1000; // 1 second
+            
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API returned status ${response.status}: ${errorData.error.message}`);
+                    }
+
+                    const result = await response.json();
+                    return result;
+
+                } catch (error) {
+                    console.error(`Attempt ${attempt + 1} failed:`, error.message);
+                    if (attempt < maxRetries - 1) {
+                        // Implement exponential backoff
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
+                    } else {
+                        throw new Error(`Failed to fetch AI news after ${maxRetries} attempts. Details: ${error.message}`);
+                    }
+                }
+            }
+        }
+
+        function renderNews(newsText, sources) {
+            const newsContent = document.getElementById('news-content');
+            const citationList = document.getElementById('citation-list');
+            const noSources = document.getElementById('no-sources');
+
+            // 1. Render the News Summary
+            newsContent.innerHTML = convertMarkdownListToHtml(newsText);
+            
+            // 2. Render the Citations
+            citationList.innerHTML = '';
+            if (sources.length > 0) {
+                noSources.classList.add('hidden');
+                sources.forEach(source => {
+                    const link = document.createElement('a');
+                    link.href = source.uri;
+                    link.textContent = source.title || source.uri;
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+                    link.className = "citation-link block truncate text-blue-600 hover:text-blue-800";
+                    citationList.appendChild(link);
+                });
+            } else {
+                noSources.classList.remove('hidden');
+            }
+
+            // 3. Update UI state
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('content-state').classList.remove('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+        }
+
+        function renderError(message) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('content-state').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // --- Initialization ---
+
+        window.onload = async () => {
+            updateDate();
+            try {
+                const apiResponse = await fetchAINews();
+                const { text, sources } = parseGeminiResponse(apiResponse);
+                if (text) {
+                    renderNews(text, sources);
+                } else {
+                    renderError("The model returned an empty response. Please try again.");
+                }
+            } catch (error) {
+                renderError(error.message);
+            }
+        };
+
+    </script>
+</body>
+</html>
+

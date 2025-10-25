@@ -940,8 +940,8 @@
             if (!apiKey) {
                 throw new Error("API key is required. Please add your Gemini API key to use this feature.");
             }
-            
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+            //`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             
             const systemPrompt = "You are a professional AI News Editor. Summarize the top 3 most important AI news developments and breakthroughs from the last 24 hours in a single, well-formatted Markdown list. Each item should be concise (1-2 sentences) and capture the essence of the news. Do not include any introductory or concluding remarks, just the list. Use markdown bullet points (* or -) for the list.";
             
