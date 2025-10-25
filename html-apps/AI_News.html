@@ -4,67 +4,205 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily AI News Brief</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
-            --secondary-color: #10b981;
-            --accent-color: #f59e0b;
-            --background-color: #f8fafc;
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary-color: #06b6d4;
+            --accent-color: #f97316;
+            --background-color: #f9fafb;
             --card-background: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Dark mode colors - will be applied when .dark-mode class is added to body */
+        .dark-mode {
+            --primary-color: #818cf8;
+            --primary-hover: #6366f1;
+            --secondary-color: #22d3ee;
+            --accent-color: #fb923c;
+            --background-color: #111827;
+            --card-background: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --border-color: #374151;
+            --success-color: #34d399;
+            --error-color: #f87171;
+            --warning-color: #fbbf24;
+            --info-color: #60a5fa;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.26);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.24);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--background-color);
             color: var(--text-primary);
             transition: all 0.3s ease;
+            line-height: 1.6;
+            padding: 1rem;
+            min-height: 100vh;
         }
         
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+        }
+        
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+        
+        /* Header styles */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 0;
+        }
+        
+        .header-content {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        /* Card styles */
         .card {
             background-color: var(--card-background);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: var(--shadow-lg);
             border-radius: 1rem;
             transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
         }
         
         .card:hover {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: var(--shadow-xl);
             transform: translateY(-2px);
         }
         
         .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
             transition: all 0.2s ease;
-            transform: translateY(0);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            border: none;
+            outline: none;
+            font-size: 0.9375rem;
+            position: relative;
+            overflow: hidden;
         }
         
-        .btn:hover {
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
         
-        .btn:active {
-            transform: translateY(0);
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn-icon {
+            margin-right: 0.5rem;
         }
         
         .loading-spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-top-color: var(--primary-color);
+            display: inline-block;
+            width: 3rem;
+            height: 3rem;
             border-radius: 50%;
-            width: 2.5rem;
-            height: 2.5rem;
-            animation: spin 1s linear infinite;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            animation: spinner 1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+            box-shadow: var(--shadow-sm);
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spinner {
+            to {
+                transform: rotate(360deg);
+            }
         }
         
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.6; }
         }
         
         .pulse {
@@ -79,17 +217,19 @@
         
         #news-content li {
             position: relative;
-            margin-bottom: 2rem;
-            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
             border-radius: 0.75rem;
-            background-color: rgba(79, 70, 229, 0.05);
+            background-color: rgba(99, 102, 241, 0.05);
             border-left: 4px solid var(--primary-color);
             transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
         }
         
         #news-content li:hover {
-            background-color: rgba(79, 70, 229, 0.1);
+            background-color: rgba(99, 102, 241, 0.08);
             transform: translateX(4px);
+            box-shadow: var(--shadow-md);
         }
         
         #news-content p {
@@ -97,13 +237,19 @@
         }
         
         .citation-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
             transition: all 0.2s ease;
             position: relative;
             display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin: 0.25rem 0;
         }
         
         .citation-link:hover {
-            color: var(--primary-color);
+            background-color: rgba(99, 102, 241, 0.1);
             text-decoration: underline;
         }
         
@@ -111,13 +257,13 @@
             content: '→';
             position: absolute;
             opacity: 0;
-            right: -1.25rem;
+            right: -0.5rem;
             transition: all 0.2s ease;
         }
         
         .citation-link:hover::after {
             opacity: 1;
-            right: -1.5rem;
+            right: -1rem;
         }
         
         .refresh-icon {
@@ -127,21 +273,396 @@
         .btn:hover .refresh-icon {
             transform: rotate(180deg);
         }
+        
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+            background-color: var(--card-background);
+            background-clip: padding-box;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+        
+        /* Header styles */
+        .header {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+        
+        .header-title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        
+        .header-date {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: var(--card-background);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            z-index: 100;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .theme-toggle svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+        
+        /* Dark mode specific styles */
+        .dark-mode .sun {
+            display: block;
+        }
+        
+        .dark-mode .moon {
+            display: none;
+        }
+        
+        .dark-mode .sun-beams {
+            display: block;
+        }
+        
+        .sun {
+            display: none;
+        }
+        
+        .sun-beams {
+            display: none;
+        }
+        
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .flex {
+            display: flex;
+        }
+        
+        .flex-col {
+            flex-direction: column;
+        }
+        
+        .items-center {
+            align-items: center;
+        }
+        
+        .justify-center {
+            justify-content: center;
+        }
+        
+        .justify-between {
+            justify-content: space-between;
+        }
+        
+        .gap-2 {
+            gap: 0.5rem;
+        }
+        
+        .gap-4 {
+            gap: 1rem;
+        }
+        
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+        
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1rem;
+        }
+        
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+        
+        .mt-8 {
+            margin-top: 2rem;
+        }
+        
+        .mt-12 {
+            margin-top: 3rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+        
+        .p-4 {
+            padding: 1rem;
+        }
+        
+        .p-6 {
+            padding: 1.5rem;
+        }
+        
+        .p-8 {
+            padding: 2rem;
+        }
+        
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-sm {
+            font-size: 0.875rem;
+        }
+        
+        .text-lg {
+            font-size: 1.125rem;
+        }
+        
+        .text-xl {
+            font-size: 1.25rem;
+        }
+        
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+        
+        .font-medium {
+            font-weight: 500;
+        }
+        
+        .font-semibold {
+            font-weight: 600;
+        }
+        
+        .font-bold {
+            font-weight: 700;
+        }
+        
+        .text-primary {
+            color: var(--primary-color);
+        }
+        
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+        
+        .text-success {
+            color: var(--success-color);
+        }
+        
+        .text-error {
+            color: var(--error-color);
+        }
+        
+        .text-warning {
+            color: var(--warning-color);
+        }
+        
+        .text-info {
+            color: var(--info-color);
+        }
+        
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .bg-success {
+            background-color: var(--success-color);
+        }
+        
+        .bg-error {
+            background-color: var(--error-color);
+        }
+        
+        .bg-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .bg-info {
+            background-color: var(--info-color);
+        }
+        
+        .rounded-full {
+            border-radius: 9999px;
+        }
+        
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+        
+        .shadow-sm {
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .shadow-md {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .shadow-lg {
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .shadow-xl {
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .border {
+            border: 1px solid var(--border-color);
+        }
+        
+        .border-t {
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .grid {
+            display: grid;
+        }
+        
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        
+        .gap-2 {
+            gap: 0.5rem;
+        }
+        
+        .space-y-3 > * + * {
+            margin-top: 0.75rem;
+        }
+        
+        .italic {
+            font-style: italic;
+        }
+        
+        .leading-relaxed {
+            line-height: 1.625;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-success {
+            background-color: var(--success-color);
+        }
+        
+        .status-error {
+            background-color: var(--error-color);
+        }
     </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen">
+<body>
+    <div class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" class="moon" />
+            <circle cx="12" cy="12" r="5" class="sun hidden" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" class="sun-beams hidden" />
+        </svg>
+    </div>
 
-    <div class="max-w-4xl mx-auto">
+    <div class="container">
         <!-- Header -->
-        <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+        <header class="header">
             <div>
-                <h1 class="text-4xl font-bold text-gray-800 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                    AI Intelligence Briefing
-                </h1>
-                <p id="current-date" class="text-xl text-gray-500 mt-2"></p>
+                <h1 class="header-title">AI Intelligence Briefing</h1>
+                <p id="current-date" class="header-date"></p>
             </div>
-            <button id="refresh-button" class="btn mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg flex items-center shadow-md">
-                <svg class="refresh-icon w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <button id="refresh-button" class="btn btn-primary">
+                <svg class="refresh-icon btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
                 Refresh News
@@ -149,73 +670,73 @@
         </header>
 
         <!-- Main News Card -->
-        <div id="news-card" class="card p-6 md:p-8 border border-gray-100">
+        <div id="news-card" class="card">
             <!-- API Key Form -->
-            <div id="api-key-form" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div class="mb-4">
-                    <label for="gemini-api-key" class="block text-sm font-medium text-blue-700 mb-1">Gemini API Key</label>
+            <div id="api-key-form" class="p-6 mb-4 border-b">
+                <div class="form-group">
+                    <label for="gemini-api-key" class="form-label text-primary">Gemini API Key</label>
                     <input 
                         type="password" 
                         id="gemini-api-key" 
-                        class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        class="form-control"
                         placeholder="Enter your Gemini API key" 
                         autocomplete="off"
                     >
-                    <div id="api-status" class="flex items-center mt-2 text-sm text-red-600">
-                        <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                    <div id="api-status" class="flex items-center mt-2 text-sm text-error">
+                        <span class="status-indicator status-error"></span>
                         <span>API key not set</span>
                     </div>
                 </div>
-                <div class="flex flex-wrap gap-2">
-                    <button id="save-api-key" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg text-sm">Save API Key</button>
-                    <button id="clear-api-key" class="bg-red-100 text-red-700 hover:bg-red-200 font-medium py-2 px-4 rounded-lg text-sm">Clear Key</button>
-                    <button id="toggle-mock-data" class="bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium py-2 px-4 rounded-lg text-sm">Use Mock Data</button>
+                <div class="flex gap-2 mt-4 flex-wrap">
+                    <button id="save-api-key" class="btn btn-primary btn-sm">Save API Key</button>
+                    <button id="clear-api-key" class="btn btn-danger btn-sm">Clear Key</button>
+                    <button id="toggle-mock-data" class="btn btn-outline btn-sm">Use Mock Data</button>
                 </div>
-                <p class="mt-2 text-xs text-gray-500">Your API key is stored securely in your browser's local storage.</p>
+                <p class="mt-2 text-sm text-secondary">Your API key is stored securely in your browser's local storage.</p>
             </div>
             
             <div id="loading-state" class="flex flex-col items-center justify-center p-12">
                 <div class="loading-spinner"></div>
-                <p class="mt-6 text-lg text-gray-600 font-medium">Gathering the latest AI headlines...</p>
-                <p class="text-sm text-gray-500 mt-2">Connecting to Gemini API</p>
+                <p class="mt-6 text-lg font-medium">Gathering the latest AI headlines...</p>
+                <p class="text-sm text-secondary mt-2">Connecting to Gemini API</p>
             </div>
 
-            <div id="content-state" class="hidden">
+            <div id="content-state" class="hidden p-6">
                 <div class="flex items-center mb-6">
-                    <div class="w-2 h-8 bg-indigo-600 rounded-full mr-3"></div>
-                    <h2 class="text-2xl font-bold text-gray-800">Top Developments Today</h2>
+                    <div class="w-2 h-8 bg-primary rounded-full mr-3"></div>
+                    <h2 class="text-2xl font-bold">Top Developments Today</h2>
                 </div>
                 
-                <div id="news-content" class="text-gray-700 leading-relaxed">
+                <div id="news-content" class="leading-relaxed">
                     <!-- News Summary will be inserted here -->
                 </div>
 
-                <div id="sources-container" class="mt-10 pt-6 border-t border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <div id="sources-container" class="mt-10 pt-6 border-t">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <svg class="btn-icon text-primary" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                         </svg>
                         Sources
                     </h3>
-                    <div id="citation-list" class="text-sm space-y-3 text-gray-600 grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div id="citation-list" class="text-sm space-y-3 text-secondary grid grid-cols-1 md:grid-cols-2 gap-2">
                         <!-- Citations will be inserted here -->
                     </div>
-                    <p id="no-sources" class="text-sm text-gray-500 italic hidden mt-2">No external sources were directly cited for this summary.</p>
+                    <p id="no-sources" class="text-sm text-secondary italic hidden mt-2">No external sources were directly cited for this summary.</p>
                 </div>
             </div>
         </div>
         
         <!-- Error State -->
-        <div id="error-state" class="hidden mt-8 card bg-red-50 p-6 rounded-xl border border-red-200 text-red-700">
+        <div id="error-state" class="hidden mt-8 card p-6 bg-error bg-opacity-5">
             <div class="flex items-center mb-4">
-                <svg class="w-6 h-6 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="btn-icon text-error" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <p class="font-semibold">Error retrieving news</p>
+                <p class="font-semibold text-error">Error retrieving news</p>
             </div>
             <p id="error-message" class="mt-2 text-sm"></p>
-            <button id="retry-button" class="mt-4 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg flex items-center shadow-md">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <button id="retry-button" class="mt-4 btn btn-danger">
+                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
                 Try Again
@@ -223,7 +744,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="mt-12 text-center text-gray-500 text-sm">
+        <footer class="mt-12 text-center text-secondary text-sm">
             <p>Powered by Google Gemini API</p>
             <p class="mt-1">© 2023 Delizen</p>
         </footer>
@@ -233,6 +754,7 @@
         // Local Storage Keys
         const API_KEY_STORAGE_KEY = 'delizen_gemini_api_key';
         const USE_MOCK_DATA_KEY = 'delizen_use_mock_data';
+        const THEME_STORAGE_KEY = 'delizen_theme_preference';
         
         // Mock data for local testing
         const MOCK_DATA = {
@@ -249,6 +771,7 @@
         // Configuration (will be updated from localStorage)
         let apiKey = '';
         let useMockData = true;
+        let darkMode = false;
         
         // --- API Key Management ---
         
@@ -551,12 +1074,28 @@
             }
         }
 
+        // --- Theme Management ---
+        
+        function loadThemePreference() {
+            const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                darkMode = true;
+            }
+        }
+        
+        function toggleTheme() {
+            darkMode = document.body.classList.toggle('dark-mode');
+            localStorage.setItem(THEME_STORAGE_KEY, darkMode ? 'dark' : 'light');
+        }
+        
         // --- Initialization ---
 
         window.onload = async () => {
             updateDate();
             
-            // Load API key from localStorage
+            // Load theme and API key from localStorage
+            loadThemePreference();
             loadApiKey();
             
             // Add event listeners
@@ -565,6 +1104,7 @@
             document.getElementById('save-api-key').addEventListener('click', saveApiKey);
             document.getElementById('clear-api-key').addEventListener('click', clearApiKey);
             document.getElementById('toggle-mock-data').addEventListener('click', toggleMockData);
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
             
             // Handle Enter key in API key input
             document.getElementById('gemini-api-key').addEventListener('keyup', (event) => {
