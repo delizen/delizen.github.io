@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Discipline Quest — Gamified Habit Builder</title>
+<style>
+  :root{
+    --bg:#070812; --card:#0e1622; --muted:#9fb0d3; --text:#e6eef8;
+    --accent:#7c6cff; --accent2:#00d4ff; --gold:#ffc857;
+    --glass: rgba(255,255,255,0.03);
+    --radius:14px;
+  }
+  [data-theme="light"]{
+    --bg: #f6f7fb; --card:#ffffff; --muted:#53627a; --text:#0b1220;
+    --accent:#5b21b6; --accent2:#0284c7; --gold:#b07a1f; --glass: rgba(11,18,32,0.03);
+  }
+
+  *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;}
+  html,body{height:100%}
+  body{margin:0;background:linear-gradient(180deg,var(--bg),#041226);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+  .app{width:100%;max-width:1100px;border-radius:16px;padding:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.02));box-shadow:0 10px 40px rgba(2,6,23,0.6);backdrop-filter: blur(6px)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;color:#071026}
+  h1{margin:0;font-size:18px}
+  .meta{font-size:13px;color:var(--muted)}
+  .top-controls{display:flex;gap:8px;align-items:center}
+  .stat{background:var(--glass);padding:8px 10px;border-radius:10px;font-weight:700;color:var(--gold)}
+  .layout{display:grid;grid-template-columns:320px 1fr;gap:14px}
+  @media (max-width:920px){.layout{grid-template-columns:1fr}}
+  .left{display:flex;flex-direction:column;gap:12px}
+  .card{background:linear-gradient(180deg,var(--card),rgba(0,0,0,0.03));padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+  .tabs{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .tab{padding:8px 10px;border-radius:10px;background:var(--glass);cursor:pointer;font-weight:700;color:var(--muted);font-size:14px}
+  .tab.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071026;box-shadow:0 8px 26px rgba(124,108,255,0.12)}
+  .xpbar{height:16px;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden;position:relative}
+  .xpfill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#ffd87a);transition:width 700ms cubic-bezier(.2,.9,.3,1)}
+  .level-circle{width:64px;height:64px;border-radius:12px;background:linear-gradient(90deg,#0f1724, rgba(255,255,255,0.02));display:grid;place-items:center;font-weight:800;color:var(--gold);font-size:18px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .btn{padding:8px 10px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071026;font-weight:800;border:none;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+  .task{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+  .badge-grid{display:flex;gap:8px;flex-wrap:wrap}
+  .badge{padding:8px;border-radius:8px;background:var(--glass);min-width:120px;text-align:center;font-size:12px}
+  .streak{background:linear-gradient(90deg,#0f1724,rgba(255,255,255,0.02));padding:6px 8px;border-radius:8px;font-weight:700}
+  .muted{color:var(--muted)}
+  .small{font-size:13px}
+  .row{display:flex;gap:8px}
+  footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+  .confetti-canvas{position:fixed;pointer-events:none;left:0;top:0;width:100%;height:100%;z-index:999}
+  input,select,textarea{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:8px;color:inherit}
+</style>
+</head>
+<body data-theme="dark">
+<canvas id="confetti" class="confetti-canvas" aria-hidden="true"></canvas>
+<div class="app" id="app" role="application" aria-label="Discipline Quest">
+  <header>
+    <div class="brand">
+      <div class="logo">DQ</div>
+      <div>
+        <h1>Discipline Quest</h1>
+        <div class="meta">Gamified habit builder — single-file, offline, local-first</div>
+      </div>
+    </div>
+
+    <div class="top-controls">
+      <div class="stat" id="gp">GP: 0</div>
+      <div class="stat" id="lvl">Lvl 1</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <label class="muted small" title="Toggle theme"><input id="themeToggle" type="checkbox" /> Light</label>
+        <label class="muted small" title="Toggle sounds"><input id="soundToggle" type="checkbox" checked /> Sound</label>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT -->
+    <aside class="left">
+      <div class="card">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="level-circle" id="levelCircle">1</div>
+          <div style="flex:1">
+            <div class="small muted">XP Progress</div>
+            <div class="xpbar" aria-hidden="true"><div id="xpfill" class="xpfill"></div></div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px">
+              <div class="muted small">XP <span id="xpText">0 / 100</span></div>
+              <div class="muted small">GP <span id="gpText">0</span></div>
+            </div>
+            <div class="controls">
+              <button class="btn" id="addTask">+ Add Task</button>
+              <button class="btn ghost" id="resetDay">Reset Day</button>
+              <button class="btn ghost" id="exportBtn">Export</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="small">Streaks</div><div class="muted tiny">longest / current</div>
+        </div>
+        <div id="streaks" class="badge-grid"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="small">Badges</div><div class="muted tiny">achievements</div>
+        </div>
+        <div id="badges" class="badge-grid"></div>
+      </div>
+    </aside>
+
+    <!-- RIGHT -->
+    <main>
+      <div class="card">
+        <div class="tabs" id="tabs" role="tablist" aria-label="Main tabs">
+          <div class="tab active" data-tab="daily">Daily Quests</div>
+          <div class="tab" data-tab="habits">Habits</div>
+          <div class="tab" data-tab="boss">Boss Battles</div>
+          <div class="tab" data-tab="shop">Shop</div>
+          <div class="tab" data-tab="stats">Stats</div>
+        </div>
+
+        <div id="content">
+          <!-- DAILY -->
+          <section data-content="daily">
+            <div id="dailyList"></div>
+            <div class="muted small" style="margin-top:8px">Daily tasks reset every calendar day.</div>
+          </section>
+
+          <!-- HABITS -->
+          <section data-content="habits" style="display:none">
+            <div id="habitsList"></div>
+            <div class="muted small" style="margin-top:8px">Habits track streaks based on consecutive days.</div>
+          </section>
+
+          <!-- BOSS -->
+          <section data-content="boss" style="display:none">
+            <div id="bossList"></div>
+            <div class="muted small" style="margin-top:8px">Weekly objectives — bigger XP & GP rewards.</div>
+          </section>
+
+          <!-- SHOP -->
+          <section data-content="shop" style="display:none">
+            <div id="shopList"></div>
+          </section>
+
+          <!-- STATS -->
+          <section data-content="stats" style="display:none">
+            <div class="row" style="gap:14px">
+              <div style="flex:1">
+                <div class="card">
+                  <div class="small">Progress</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                    <div><div style="font-weight:800;font-size:22px" id="totalCompleted">0</div><div class="muted tiny">tasks completed</div></div>
+                    <div><div style="font-weight:800;font-size:22px" id="longest">0</div><div class="muted tiny">longest streak</div></div>
+                    <div><div style="font-weight:800;font-size:22px" id="totalXP">0</div><div class="muted tiny">total XP</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="width:320px">
+                <div class="card small">
+                  <div style="font-weight:800">Level milestones</div>
+                  <div id="milestoneList" style="margin-top:8px"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <div class="small">Save / Load</div>
+              <div style="margin-top:8px" class="row">
+                <button class="btn" id="downloadSave">Download Save</button>
+                <input id="importFile" type="file" accept="application/json" style="flex:1" />
+              </div>
+              <div class="muted tiny" style="margin-top:8px">Export & import your save file to move devices or share progress.</div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <footer class="muted small">Built with localStorage • No external deps • Use keyboard shortcut Ctrl/⌘+N to add a task</footer>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ---------- Utilities ---------- */
+const TODAY = ()=> new Date().toISOString().slice(0,10);
+const id = ()=> Math.random().toString(36).slice(2,9);
+const STORAGE_KEY = 'discipline_quest_v1';
+const baseXP = 100; // XP for level 2 from 1
+const soundEnabled = ()=> document.getElementById('soundToggle').checked;
+
+/* ---------- Confetti (simple) ---------- */
+const confettiCanvas = document.getElementById('confetti');
+const confettiCtx = confettiCanvas.getContext?.('2d');
+function resizeCanvas(){ confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+let confettiPieces = [];
+function spawnConfetti(n=40){
+  if(!confettiCtx) return;
+  confettiPieces = [];
+  for(let i=0;i<n;i++){
+    confettiPieces.push({
+      x: Math.random()*confettiCanvas.width,
+      y: -20 - Math.random()*100,
+      vx: (Math.random()-0.5)*4,
+      vy: 2 + Math.random()*4,
+      r: 6 + Math.random()*6,
+      c: ['#ffc857','#7c6cff','#00d4ff','#ff6b6b','#7ee787'][Math.floor(Math.random()*5)],
+      rot: Math.random()*360
+    });
+  }
+  animateConfetti();
+}
+function animateConfetti(){
+  if(!confettiCtx) return;
+  const step = ()=> {
+    confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+    confettiPieces.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.rot += 6;
+      confettiCtx.save();
+      confettiCtx.translate(p.x,p.y);
+      confettiCtx.rotate(p.rot*Math.PI/180);
+      confettiCtx.fillStyle = p.c;
+      confettiCtx.fillRect(-p.r/2, -p.r/2, p.r, p.r*0.6);
+      confettiCtx.restore();
+    });
+    confettiPieces = confettiPieces.filter(p=>p.y < confettiCanvas.height + 40);
+    if(confettiPieces.length) requestAnimationFrame(step);
+    else confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  };
+  requestAnimationFrame(step);
+}
+
+/* ---------- Audio feedback ---------- */
+function tone(freq=440,d=0.08){
+  if(!soundEnabled()) return;
+  try{
+    const C = new (window.AudioContext||window.webkitAudioContext)();
+    const o = C.createOscillator(); const g = C.createGain();
+    o.connect(g); g.connect(C.destination);
+    o.frequency.value = freq; o.start();
+    g.gain.setValueAtTime(0.0001, C.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.12, C.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, C.currentTime + d);
+    setTimeout(()=> { o.stop(); C.close(); }, d*1000 + 50);
+  }catch(e){}
+}
+
+/* ---------- XP & Leveling ---------- */
+function xpForLevel(l){
+  return Math.max(10, Math.floor(baseXP * Math.pow(1.2, l-1)));
+}
+
+/* ---------- Default data ---------- */
+const DEFAULT = {
+  gp: 0, xp:0, level:1, totalXP:0, totalCompleted:0, lastReset: TODAY(),
+  tasks: {
+    daily: [
+      {id:id(),title:"Morning routine",desc:"Make bed + hygiene",points:5,xp:30,complete:false},
+      {id:id(),title:"Focused work (1hr)",desc:"Deep work session",points:6,xp:40,complete:false},
+      {id:id(),title:"Healthy meal",desc:"Nutritious meal",points:4,xp:25,complete:false}
+    ],
+    habits: [
+      {id:id(),title:"Drink water",desc:"Hydrate",points:1,xp:8,streak:0,last:""},
+      {id:id(),title:"Take vitamins",desc:"Supplements",points:1,xp:8,streak:0,last:""},
+      {id:id(),title:"Gratitude journaling",desc:"3 things",points:2,xp:12,streak:0,last:""}
+    ],
+    boss: [
+      {id:id(),title:"Weekly milestone",desc:"Major project goal",points:20,xp:200,complete:false}
+    ]
+  },
+  badges: {},
+  shop: [
+    {id:'s1',title:'Snack (Low)',cost:20,desc:'Treat yourself'},
+    {id:'s2',title:'Movie Night (Med)',cost:60,desc:'Outing / movie'},
+    {id:'s3',title:'Day Off (High)',cost:150,desc:'Full day off'}
+  ],
+  longestStreak:0
+};
+
+let state = load();
+
+/* ---------- Persistence ---------- */
+function save(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ console.error("Save error", e); alert("Warning: saving failed (localStorage)."); }
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return structuredClone(DEFAULT);
+    const parsed = JSON.parse(raw);
+    return Object.assign(structuredClone(DEFAULT), parsed);
+  }catch(e){ console.error("Load err", e); return structuredClone(DEFAULT); }
+}
+function exportToClipboard(){
+  const data = JSON.stringify(state, null, 2);
+  navigator.clipboard?.writeText(data).then(()=> alert('Save copied to clipboard'), ()=> { prompt('Copy save JSON (fallback)', data); });
+}
+
+/* ---------- Core mechanics ---------- */
+function addXP(amount){
+  state.xp += amount; state.totalXP += amount;
+  while(state.xp >= xpForLevel(state.level)){
+    state.xp -= xpForLevel(state.level);
+    state.level += 1;
+    showToast(`Level Up! ${state.level}`);
+    spawnConfetti(50);
+    tone(700,0.12);
+  }
+  save(); render();
+}
+function addGP(n){ state.gp = Math.max(0, state.gp + n); save(); render(); }
+function awardBadge(key, info){
+  if(state.badges[key]) return false;
+  state.badges[key] = {key, date: new Date().toISOString(), ...info};
+  save(); render(); tone(520,0.09); spawnConfetti(30);
+  return true;
+}
+
+/* ---------- Daily reset ---------- */
+function dailyReset(force=false){
+  const today = TODAY();
+  if(force || state.lastReset !== today){
+    state.tasks.daily.forEach(t=> t.complete = false);
+    state.tasks.boss.forEach(b=> b.complete = false);
+    state.lastReset = today;
+    save();
+  }
+}
+
+/* ---------- Completing tasks ---------- */
+function completeTask(cat, tid){
+  const list = state.tasks[cat];
+  if(!list) return;
+  const task = list.find(t=>t.id===tid);
+  if(!task) return;
+  if(cat === 'habits'){
+    const today = TODAY();
+    if(task.last === today) return;
+    // streak logic
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+    const y = yesterday.toISOString().slice(0,10);
+    if(task.last === y) task.streak = (task.streak||0) + 1;
+    else task.streak = 1;
+    task.last = today;
+    state.longestStreak = Math.max(state.longestStreak, task.streak);
+    awardStreaks(task);
+  } else {
+    if(task.complete) return;
+    task.complete = true;
+    if(cat === 'boss') awardBadge('boss_' + task.id, {title:'Boss: '+task.title, desc:task.desc});
+  }
+  const xpGain = task.xp || Math.floor((task.points||1)*10);
+  addXP(xpGain);
+  addGP(task.points || 1);
+  state.totalCompleted = (state.totalCompleted || 0) + 1;
+  checkProgressBadges();
+  tone(360,0.08);
+  save(); render();
+}
+
+/* ---------- Badges logic ---------- */
+function awardStreaks(task){
+  const s = task.streak || 0;
+  if(s === 7) awardBadge('streak7_'+task.id, {title:'7-day streak', desc: task.title});
+  if(s === 30) awardBadge('streak30_'+task.id, {title:'30-day streak', desc: task.title});
+  if(s === 100) awardBadge('streak100_'+task.id, {title:'100-day streak', desc: task.title});
+}
+function checkProgressBadges(){
+  const n = state.totalCompleted || 0;
+  if(n === 1) awardBadge('first', {title:'First quest', desc:'Completed your first task'});
+  if(n === 5) awardBadge('five', {title:'5 tasks', desc:'Completed 5 tasks'});
+  if(n === 10) awardBadge('ten', {title:'10 tasks', desc:'Completed 10 tasks'});
+}
+
+/* ---------- UI Rendering ---------- */
+const selectors = {
+  xpfill: document.getElementById('xpfill'),
+  xpText: document.getElementById('xpText'),
+  gpText: document.getElementById('gpText'),
+  gpStat: document.getElementById('gp'),
+  lvlStat: document.getElementById('lvl'),
+  levelCircle: document.getElementById('levelCircle'),
+  dailyList: document.getElementById('dailyList'),
+  habitsList: document.getElementById('habitsList'),
+  bossList: document.getElementById('bossList'),
+  shopList: document.getElementById('shopList'),
+  badges: document.getElementById('badges'),
+  streaks: document.getElementById('streaks'),
+  totalCompleted: document.getElementById('totalCompleted'),
+  longest: document.getElementById('longest'),
+  totalXP: document.getElementById('totalXP'),
+  milestoneList: document.getElementById('milestoneList'),
+};
+
+function render(){
+  // header stats
+  selectors.gpStat.textContent = `GP: ${state.gp}`;
+  selectors.gpText.textContent = state.gp;
+  selectors.lvlStat.textContent = `Lvl ${state.level}`;
+  selectors.levelCircle.textContent = state.level;
+  // XPbar
+  const req = xpForLevel(state.level);
+  selectors.xpText.textContent = `${state.xp} / ${req}`;
+  selectors.xpfill.style.width = Math.min(100, Math.round((state.xp / req)*100)) + '%';
+  // totals
+  selectors.totalCompleted.textContent = state.totalCompleted || 0;
+  selectors.longest.textContent = state.longestStreak || 0;
+  selectors.totalXP.textContent = state.totalXP || 0;
+
+  // lists
+  renderList('daily', state.tasks.daily, selectors.dailyList);
+  renderList('habits', state.tasks.habits, selectors.habitsList);
+  renderList('boss', state.tasks.boss, selectors.bossList);
+  renderShop();
+  renderBadges();
+  renderStreaks();
+  renderMilestones();
+}
+
+function renderList(cat, arr, container){
+  container.innerHTML = '';
+  if(!arr || arr.length === 0){ container.innerHTML = `<div class="muted small">No ${cat} tasks — add one.</div>`; return; }
+  arr.forEach(t=>{
+    const done = (cat !== 'habits' && t.complete) || (cat === 'habits' && t.last === TODAY());
+    const el = document.createElement('div'); el.className = 'task';
+    el.innerHTML = `
+      <div style="width:58px;text-align:center">
+        <div class="muted tiny">${t.points||1} GP</div>
+        <div class="muted tiny">${t.xp||Math.floor((t.points||1)*10)} XP</div>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>${escapeHtml(t.title)}</strong><div class="muted tiny">${escapeHtml(t.desc||'')}</div></div>
+          <div class="muted tiny">#${t.id.slice(0,4)}</div>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          ${cat === 'habits' ? `<div class="streak">Streak: ${t.streak||0}</div>` : ''}
+          <div class="muted tiny">${cat}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn complete" ${done ? 'disabled' : ''} data-cat="${cat}" data-id="${t.id}">${done ? 'Done' : 'Complete'}</button>
+        <button class="btn ghost edit" data-cat="${cat}" data-id="${t.id}">Edit</button>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+
+  container.querySelectorAll('.complete').forEach(b=>{
+    b.onclick = ()=> {
+      const cat = b.dataset.cat, tid = b.dataset.id;
+      completeTask(cat, tid);
+      b.classList.add('pulse');
+      setTimeout(()=> b.classList.remove('pulse'),900);
+    };
+  });
+  container.querySelectorAll('.edit').forEach(b=>{
+    b.onclick = ()=> {
+      const cat = b.dataset.cat, tid = b.dataset.id;
+      editTask(cat, tid);
+    }
+  });
+}
+
+function renderShop(){
+  const el = selectors.shopList;
+  el.innerHTML = '';
+  state.shop.forEach(it=>{
+    const row = document.createElement('div'); row.className = 'task';
+    row.innerHTML = `<div style="flex:1">
+      <div style="font-weight:800">${escapeHtml(it.title)}</div>
+      <div class="muted tiny">${escapeHtml(it.desc)}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+      <div class="muted tiny">${it.cost} GP</div>
+      <button class="btn buy" data-id="${it.id}">Buy</button>
+    </div>`;
+    el.appendChild(row);
+    row.querySelector('.buy').onclick = ()=>{
+      if(state.gp < it.cost){ alert('Not enough GP'); tone(200,0.08); return; }
+      if(!confirm(`Spend ${it.cost} GP to redeem "${it.title}"?`)) return;
+      addGP(-it.cost);
+      awardBadge('p_'+it.id, {title:'Redeemed: '+it.title, desc: it.desc});
+      showToast(`Redeemed: ${it.title}`);
+    };
+  });
+}
+
+function renderBadges(){
+  const el = selectors.badges;
+  el.innerHTML = '';
+  const keys = Object.keys(state.badges || {});
+  if(keys.length === 0){ el.innerHTML = `<div class="muted tiny">No badges yet.</div>`; return; }
+  keys.forEach(k=>{
+    const b = state.badges[k];
+    const d = document.createElement('div'); d.className = 'badge';
+    d.innerHTML = `<div style="font-weight:800">${escapeHtml(b.title||k)}</div><div class="muted tiny">${escapeHtml(b.desc||'')}</div><div class="muted tiny">${new Date(b.date).toLocaleDateString()}</div>`;
+    el.appendChild(d);
+  });
+}
+
+function renderStreaks(){
+  const el = selectors.streaks; el.innerHTML = '';
+  state.tasks.habits.forEach(h=>{
+    const d = document.createElement('div'); d.className='badge';
+    d.innerHTML = `<div style="font-weight:700">${escapeHtml(h.title)}</div><div class="muted tiny">Current: ${h.streak||0}</div><div class="muted tiny">Last: ${h.last || '-'}</div>`;
+    el.appendChild(d);
+  });
+}
+
+function renderMilestones(){
+  const el = selectors.milestoneList; el.innerHTML = '';
+  [5,10,20,50].forEach(l=>{
+    const achieved = state.level >= l;
+    const node = document.createElement('div'); node.style.marginBottom='6px';
+    node.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px;border-radius:8px;background:${achieved ? 'linear-gradient(90deg,var(--accent),var(--accent2))' : 'var(--glass)'}"><div style="font-weight:800">Level ${l}</div><div class="muted tiny">${achieved ? 'Unlocked' : 'Locked'}</div></div>`;
+    el.appendChild(node);
+    if(achieved) awardBadge('lvl_'+l, {title:`Level ${l}`, desc:'Milestone'});
+  });
+}
+
+/* ---------- Edit & Add tasks ---------- */
+function editTask(cat, tid){
+  const list = state.tasks[cat];
+  const t = list.find(x=>x.id===tid);
+  if(!t) return;
+  const title = prompt('Title', t.title);
+  if(title === null) return;
+  t.title = title.trim() || t.title;
+  t.desc = prompt('Description', t.desc) || t.desc;
+  t.points = parseInt(prompt('GP points', t.points || 1) || t.points) || t.points;
+  t.xp = parseInt(prompt('XP', t.xp || 10) || t.xp) || t.xp;
+  save(); render();
+}
+document.getElementById('addTask').onclick = ()=>{
+  const cat = prompt('Category (daily/habits/boss)', 'daily');
+  if(!['daily','habits','boss'].includes(cat)) return alert('Invalid category');
+  const title = prompt('Task title'); if(!title) return;
+  const desc = prompt('Description','') || '';
+  const points = parseInt(prompt('GP points','3')||'3') || 3;
+  const xp = parseInt(prompt('XP','30') || '30') || 30;
+  const obj = {id:id(), title, desc, points, xp, complete:false, streak:0, last:""};
+  state.tasks[cat].push(obj); save(); render();
+}
+
+/* ---------- UI helpers ---------- */
+function escapeHtml(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function showToast(text){
+  const el = document.createElement('div'); el.textContent = text;
+  el.style.position='fixed'; el.style.right='18px'; el.style.bottom='18px';
+  el.style.padding='12px 14px'; el.style.borderRadius='12px'; el.style.background='linear-gradient(90deg,var(--accent),var(--accent2))';
+  el.style.color='#071026'; el.style.fontWeight='800'; el.style.zIndex=9999;
+  document.body.appendChild(el);
+  setTimeout(()=> el.style.opacity = 0, 1800);
+  setTimeout(()=> el.remove(), 2400);
+}
+
+/* ---------- Tabs ---------- */
+document.getElementById('tabs').addEventListener('click', e=>{
+  const t = e.target.closest('.tab'); if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const sel = t.dataset.tab;
+  document.querySelectorAll('[data-content]').forEach(s=> s.style.display = (s.dataset.content === sel ? '' : 'none'));
+});
+
+/* ---------- Shop Buy logic handled in renderShop ---------- */
+
+/* ---------- Reset/Export/Import ---------- */
+document.getElementById('resetDay').onclick = ()=> { dailyReset(true); showToast('Daily reset'); render(); };
+document.getElementById('exportBtn').onclick = exportToClipboard;
+document.getElementById('downloadSave').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'discipline_quest_save.json';
+  a.click(); URL.revokeObjectURL(url);
+};
+document.getElementById('importFile').addEventListener('change', async e=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    const t = await f.text(); const parsed = JSON.parse(t);
+    state = Object.assign(structuredClone(DEFAULT), parsed);
+    save(); render(); alert('Import loaded');
+  }catch(err){ alert('Import failed: ' + err.message); }
+});
+
+/* ---------- Theme & Sound toggles ---------- */
+const themeToggle = document.getElementById('themeToggle');
+const soundToggle = document.getElementById('soundToggle');
+function applyTheme(){
+  const isLight = themeToggle.checked;
+  document.body.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  savePref();
+}
+themeToggle.addEventListener('change', ()=> applyTheme());
+soundToggle.addEventListener('change', ()=> savePref());
+function savePref(){
+  try{ localStorage.setItem('dq_prefs', JSON.stringify({light: themeToggle.checked, sound: soundToggle.checked})); }catch(e){}
+}
+function loadPref(){
+  try{
+    const p = JSON.parse(localStorage.getItem('dq_prefs') || '{}');
+    if(p.light) themeToggle.checked = true;
+    if(p.sound === false) soundToggle.checked = false;
+    applyTheme();
+  }catch(e){}
+}
+loadPref();
+
+/* ---------- Misc features ---------- */
+function checkInitialAchievements(){
+  [5,10,20,50].forEach(l=>{ if(state.level >= l) awardBadge('lvl_'+l, {title:'Level '+l, desc:'Milestone'}); });
+  checkProgressBadges();
+}
+
+/* ---------- Keyboard shortcut ---------- */
+window.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 'n'){ e.preventDefault(); document.getElementById('addTask').click(); }
+});
+
+/* ---------- Initial load ---------- */
+dailyReset(false); render(); checkInitialAchievements();
+
+/* ---------- Simple accessibility: mark content sections ---------- */
+document.querySelectorAll('[data-content]').forEach(s=>{
+  s.setAttribute('role','region');
+});
+
+/* ---------- Export button to clipboard ---------- */
+document.getElementById('exportBtn').title = 'Copy save JSON to clipboard';
+
+/* ---------- small helpers for completing via dynamic events ---------- */
+document.addEventListener('click', e=>{
+  const b = e.target.closest('button[data-cat]');
+  if(!b) return;
+  const cat = b.dataset.cat; const tid = b.dataset.id;
+  if(cat && tid){ completeTask(cat, tid); }
+});
+
+/* ---------- Initial sound notice ---------- */
+document.body.addEventListener('click', ()=> { /* unlock audio in some browsers */ }, {once:true});
+</script>
+</body>
+</html>

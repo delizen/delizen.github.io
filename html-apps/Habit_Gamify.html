@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Habit Gamify — Habit & Discipline Game</title>
+<style>
+  :root{
+    --bg:#0b0f1a; --card:#0f1724; --muted:#9aa6c3;
+    --accent:#7c6cff; --accent2:#00d4ff; --gold:#ffc857;
+    --glass: rgba(255,255,255,0.03);
+    --radius:14px;
+    --glass-2: rgba(255,255,255,0.02);
+  }
+  *{box-sizing:border-box;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  body{margin:0;background:linear-gradient(180deg,#05060a 0%, #071026 60%);color:#e6eef8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .app{width:100%;max-width:1100px;border-radius:18px;padding:20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));box-shadow: 0 8px 30px rgba(2,6,23,0.7);backdrop-filter: blur(6px);}
+  header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .logo{display:flex;gap:12px;align-items:center}
+  .logo .shield{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:700;color:#071026;box-shadow:0 6px 20px rgba(124,108,255,0.15)}
+  h1{font-size:18px;margin:0}
+  .meta{color:var(--muted);font-size:13px}
+  .top-stats{display:flex;gap:12px;align-items:center}
+  .stat{background:var(--glass);padding:8px 12px;border-radius:10px;font-weight:600;color:var(--gold)}
+  .layout{display:grid;grid-template-columns:320px 1fr;gap:16px}
+  @media (max-width:900px){.layout{grid-template-columns:1fr;}}
+  .left{display:flex;flex-direction:column;gap:12px}
+  .card{background:linear-gradient(180deg,var(--card),#0b1220);padding:14px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(2,6,23,0.5);border:1px solid rgba(255,255,255,0.02)}
+  .tabs{display:flex;gap:6px;margin-bottom:8px}
+  .tab{padding:8px 10px;border-radius:10px;background:var(--glass);cursor:pointer;font-weight:600;color:var(--muted);font-size:14px}
+  .tab.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071026;box-shadow:0 6px 18px rgba(124,108,255,0.12)}
+  .task{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--glass-2);margin-bottom:8px}
+  .task .title{flex:1}
+  .task small{display:block;color:var(--muted);font-size:12px}
+  .btn{padding:8px 10px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071026;font-weight:700;border:none;cursor:pointer}
+  .btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+  .xpbar{height:16px;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden;position:relative}
+  .xpfill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#ffd87a);transition:width 800ms cubic-bezier(.2,.9,.3,1)}
+  .level-badge{display:flex;gap:10px;align-items:center}
+  .level-circle{width:64px;height:64px;border-radius:14px;background:linear-gradient(90deg,#111827, rgba(255,255,255,0.02));display:grid;place-items:center;font-weight:800;color:var(--gold);font-size:18px;box-shadow:0 8px 30px rgba(255,200,87,0.06)}
+  .small{font-size:13px;color:var(--muted)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .badge-grid{display:flex;gap:8px;flex-wrap:wrap}
+  .badge{padding:8px;border-radius:10px;background:rgba(255,255,255,0.02);min-width:120px;text-align:center;font-size:12px}
+  .shop-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:var(--glass-2);margin-bottom:8px}
+  .flex{display:flex;gap:8px;align-items:center}
+  .center{text-align:center}
+  .muted{color:var(--muted)}
+  .celebrate{animation:pop 900ms ease-out}
+  @keyframes pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
+  .tiny{font-size:12px}
+  .streak{background:linear-gradient(90deg,#0f1724,rgba(255,255,255,0.02));padding:6px 8px;border-radius:8px;font-weight:700}
+  .tabs-content{margin-top:8px}
+  input[type="text"], input[type="number"], select, textarea{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:8px;color:inherit;width:100%}
+  .row{display:flex;gap:8px}
+  .bottom{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:12px}
+  .progress-number{font-weight:800;font-size:22px}
+  footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="app" id="app" role="application" aria-label="Habit Gamify Game">
+  <header>
+    <div class="logo">
+      <div class="shield">HG</div>
+      <div>
+        <h1>Habit Gamify</h1>
+        <div class="meta">Habit & Discipline gamification — offline, single file</div>
+      </div>
+    </div>
+    <div class="top-stats">
+      <div class="stat" id="gp">GP: 0</div>
+      <div class="stat" id="level">Lvl 1</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT: Dashboard & Tabs -->
+    <aside class="left">
+      <div class="card" id="dashboard">
+        <div class="level-badge">
+          <div class="level-circle" id="levelCircle">1</div>
+          <div style="flex:1">
+            <div class="small">XP Progress</div>
+            <div class="xpbar" title="XP progress">
+              <div class="xpfill" id="xpfill" aria-hidden="true"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px">
+              <div class="muted small">XP <span id="xpText">0 / 100</span></div>
+              <div class="muted small">GP <span id="gpText">0</span></div>
+            </div>
+            <div class="controls">
+              <button class="btn" id="addTaskBtn">+ Add Task</button>
+              <button class="btn secondary" id="resetDayBtn" title="Force daily reset">Reset Day</button>
+              <button class="btn secondary" id="exportBtn">Export</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="small">Streaks</div>
+          <div class="tiny muted">longest / current</div>
+        </div>
+        <div id="streaksArea" class="badge-grid"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="small">Badges</div>
+          <div class="tiny muted">achievement collection</div>
+        </div>
+        <div id="badgesArea" class="badge-grid"></div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: Main tabs -->
+    <main>
+      <div class="card">
+        <div class="tabs" id="mainTabs" role="tablist" aria-label="Main tabs">
+          <div class="tab active" data-tab="daily">Daily Quests</div>
+          <div class="tab" data-tab="habits">Habits</div>
+          <div class="tab" data-tab="boss">Boss Battles</div>
+          <div class="tab" data-tab="shop">Shop</div>
+          <div class="tab" data-tab="stats">Stats</div>
+        </div>
+
+        <div class="tabs-content" id="tabContent">
+          <!-- Daily -->
+          <section data-content="daily">
+            <div id="dailyList"></div>
+            <div style="margin-top:8px">
+              <small class="muted">Tip: mark as complete to get instant XP & GP. Daily tasks reset every calendar day.</small>
+            </div>
+          </section>
+
+          <!-- Habits -->
+          <section data-content="habits" style="display:none">
+            <div id="habitList"></div>
+            <div style="margin-top:8px">
+              <small class="muted">Habits track streaks. Complete daily to maintain streak.</small>
+            </div>
+          </section>
+
+          <!-- Boss -->
+          <section data-content="boss" style="display:none">
+            <div id="bossList"></div>
+            <div style="margin-top:8px">
+              <small class="muted">Boss Battles are weekly objectives — earn large XP and GP.</small>
+            </div>
+          </section>
+
+          <!-- Shop -->
+          <section data-content="shop" style="display:none">
+            <div id="shopList"></div>
+          </section>
+
+          <!-- Stats -->
+          <section data-content="stats" style="display:none">
+            <div class="row" style="gap:16px">
+              <div style="flex:1">
+                <div class="card">
+                  <div class="small">Progress</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                    <div>
+                      <div class="progress-number" id="totalQuests">0</div>
+                      <div class="muted tiny">total tasks completed</div>
+                    </div>
+                    <div>
+                      <div class="progress-number" id="longestStreak">0</div>
+                      <div class="muted tiny">longest streak</div>
+                    </div>
+                    <div>
+                      <div class="progress-number" id="totalXP">0</div>
+                      <div class="muted tiny">total XP earned</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="width:320px">
+                <div class="card">
+                  <div class="small">Level Milestones</div>
+                  <div style="margin-top:8px" id="milestonesList"></div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:12px" class="card">
+              <div class="small">Export / Import</div>
+              <div style="margin-top:8px" class="row">
+                <button class="btn" id="downloadSave">Download Save</button>
+                <input type="file" id="importFile" accept="application/json" />
+              </div>
+              <div style="margin-top:8px" class="muted tiny">You can export your save and import on another device.</div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <footer>
+        Built for habit-building & focus • Local-first • Leveling & reward shop • Press "Add Task" to create custom tasks
+      </footer>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ---------- Utilities ---------- */
+const nowDateKey = () => new Date().toISOString().slice(0,10);
+const randId = ()=> Math.random().toString(36).slice(2,9);
+const playTone = (freq=440,dur=0.08) => {
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq; o.start();
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    setTimeout(()=>{o.stop();ctx.close();}, dur*1000 + 50);
+  }catch(e){}
+}
+
+/* ---------- Game Data & Defaults ---------- */
+const DEFAULTS = {
+  gp: 0, xp: 0, level:1, totalXP:0, totalCompleted:0,
+  lastResetDate: nowDateKey(),
+  tasks: {
+    daily: [
+      {id:randId(),title:"Morning routine",desc:"Stretch, make bed, hygiene",points:5, xp:30,complete:false},
+      {id:randId(),title:"Focused work session (1hr)",desc:"Deep work block",points:6,xp:40,complete:false},
+      {id:randId(),title:"Healthy meal",desc:"Nutritious meal",points:4,xp:25,complete:false},
+    ],
+    habits: [
+      {id:randId(),title:"Drink water",desc:"Drink enough water today",points:1,xp:8,streak:0,last:""},
+      {id:randId(),title:"Take vitamins",desc:"Vitamins / supplements",points:1,xp:8,streak:0,last:""},
+      {id:randId(),title:"Gratitude journaling",desc:"Write 3 things you're grateful for",points:2,xp:12,streak:0,last:""},
+    ],
+    boss: [
+      {id:randId(),title:"Major milestone - Project",desc:"Finish milestone task for project",points:20,xp:200,complete:false}
+    ]
+  },
+  badges: {},
+  milestones: [],
+  shop: [
+    {id:'s1',title:"Favorite snack (Low)",cost:20,desc:"Treat yourself"},
+    {id:'s2',title:"Movie night (Medium)",cost:60,desc:"Movie or outing"},
+    {id:'s3',title:"Full day off (High)",cost:150,desc:"Take the day for yourself"}
+  ],
+  longestStreak:0
+};
+
+/* ---------- Persistence ---------- */
+const STORAGE_KEY = 'habit_gamify_v1';
+function loadSave(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return JSON.parse(JSON.stringify(DEFAULTS));
+    const parsed = JSON.parse(raw);
+    // backward compatibility: ensure required fields
+    return Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), parsed);
+  }catch(e){
+    console.error("Load failed",e);
+    return JSON.parse(JSON.stringify(DEFAULTS));
+  }
+}
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.error("Save failed",e);
+    alert("Saving failed — localStorage may be unavailable.");
+  }
+}
+
+/* ---------- XP & Leveling ---------- */
+const baseXP = 100; // XP to reach level 2 from 1
+function xpForLevel(level){
+  // level -> XP required to go from level to level+1
+  // Each level needs ~20% more: xp = base * 1.2^(level-1)
+  return Math.max(10, Math.floor(baseXP * Math.pow(1.2, level-1)));
+}
+function addXP(amount){
+  state.xp += amount;
+  state.totalXP += amount;
+  document.getElementById('totalXP').textContent = state.totalXP;
+  const required = xpForLevel(state.level);
+  // level up loop
+  while(state.xp >= required){
+    state.xp -= required;
+    state.level += 1;
+    celebrate(`Level Up! Reached Level ${state.level}`);
+    playTone(700,0.1);
+  }
+  syncUI();
+  saveState();
+}
+
+/* ---------- GP ---------- */
+function addGP(amount){
+  state.gp += amount;
+  if(state.gp < 0) state.gp = 0;
+  syncUI();
+  saveState();
+}
+
+/* ---------- Badges & Achievements ---------- */
+function awardBadge(key, data){
+  if(state.badges[key]) return false;
+  state.badges[key] = {key, date:new Date().toISOString(), ...data};
+  saveState();
+  syncUI();
+  celebrate(`Badge Earned: ${data.title}`);
+  playTone(520,0.08);
+  return true;
+}
+
+/* ---------- Daily Reset Logic ---------- */
+function dailyResetCheck(force=false){
+  const today = nowDateKey();
+  if(force || state.lastResetDate !== today){
+    // reset daily tasks complete flags
+    state.tasks.daily.forEach(t=> t.complete = false);
+    state.tasks.boss.forEach(b=> b.complete = false);
+    // For habits: don't automatically clear streaks - streaks rely on last date
+    state.lastResetDate = today;
+    saveState();
+    syncUI();
+  }
+}
+
+/* ---------- Task Completion ---------- */
+function completeTask(category,id){
+  const taskList = state.tasks[category];
+  if(!taskList) return;
+  const task = taskList.find(t=>t.id===id);
+  if(!task) return;
+  // Guard for already completed daily/boss tasks
+  if(category !== 'habits' && task.complete) return;
+  // For habits, check if already completed today
+  if(category==='habits'){
+    const today = nowDateKey();
+    if(task.last === today) return; // already done today
+    // check consecutive day
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+    const ystr = yesterday.toISOString().slice(0,10);
+    if(task.last === ystr){
+      task.streak = (task.streak || 0) + 1;
+    } else {
+      task.streak = 1;
+    }
+    task.last = today;
+    state.longestStreak = Math.max(state.longestStreak, task.streak);
+    document.getElementById('longestStreak').textContent = state.longestStreak;
+    awardStreakBadges(task);
+  } else {
+    task.complete = true;
+  }
+
+  // award XP & GP
+  const xpGain = task.xp || Math.floor((task.points||1)*10);
+  addXP(xpGain);
+  addGP(task.points || 1);
+  state.totalCompleted = (state.totalCompleted||0) + 1;
+  document.getElementById('totalQuests').textContent = state.totalCompleted;
+
+  // first quest completion badge
+  if(state.totalCompleted === 1) awardBadge('first_quest',{title:'First Quest',desc:'Completed first quest'});
+  // boss victory badge
+  if(category==='boss' && task.complete) awardBadge('boss_victory_'+task.id,{title:'Boss Victory',desc:task.title});
+  // overall progress badge for counts
+  checkTotalCompletionBadges();
+
+  saveState();
+  syncUI();
+  playTone(340,0.09);
+}
+
+/* ---------- Badges logic ---------- */
+function awardStreakBadges(task){
+  const streak = task.streak || 0;
+  if(streak === 7) awardBadge('streak_7',{title:'7-day Streak',desc:`${task.title} - 7 days`});
+  if(streak === 30) awardBadge('streak_30',{title:'30-day Streak',desc:`${task.title} - 30 days`});
+  if(streak === 100) awardBadge('streak_100',{title:'100-day Streak',desc:`${task.title} - 100 days`});
+}
+function checkTotalCompletionBadges(){
+  const c = state.totalCompleted;
+  if(c === 5) awardBadge('total5',{title:'5 tasks done',desc:'Complete 5 tasks'});
+  if(c === 10) awardBadge('total10',{title:'10 tasks done',desc:'Complete 10 tasks'});
+  if(c === 20) awardBadge('total20',{title:'20 tasks done',desc:'Complete 20 tasks'});
+}
+
+/* ---------- UI Render ---------- */
+const state = loadSave();
+
+function syncUI(){
+  // Header stats
+  document.getElementById('gp').textContent = `GP: ${state.gp}`;
+  document.getElementById('gpText').textContent = state.gp;
+  document.getElementById('level').textContent = `Lvl ${state.level}`;
+  document.getElementById('levelCircle').textContent = state.level;
+  // XP bar
+  const req = xpForLevel(state.level);
+  document.getElementById('xpText').textContent = `${state.xp} / ${req}`;
+  const pct = Math.min(100, Math.round((state.xp / req) * 100));
+  document.getElementById('xpfill').style.width = pct + '%';
+
+  // totals
+  document.getElementById('totalQuests').textContent = state.totalCompleted || 0;
+  document.getElementById('totalXP').textContent = state.totalXP || 0;
+  document.getElementById('longestStreak').textContent = state.longestStreak || 0;
+
+  // tasks lists
+  renderList('daily', state.tasks.daily, document.getElementById('dailyList'));
+  renderList('habits', state.tasks.habits, document.getElementById('habitList'));
+  renderList('boss', state.tasks.boss, document.getElementById('bossList'));
+  renderShop();
+  renderStreaks();
+  renderBadges();
+  renderMilestones();
+}
+
+function renderList(category, arr, container){
+  container.innerHTML = '';
+  if(!arr || arr.length===0){
+    container.innerHTML = `<div class="muted tiny">No ${category} tasks. Add some!</div>`;
+    return;
+  }
+  arr.forEach(t=>{
+    const el = document.createElement('div');
+    el.className = 'task';
+    const completed = (category!=='habits' && t.complete) || (category==='habits' && t.last === nowDateKey());
+    el.innerHTML = `
+      <div style="width:44px;text-align:center">
+        <div class="tiny muted">${t.points||1} GP</div>
+        <div class="tiny muted">${t.xp||Math.floor((t.points||1)*10)} XP</div>
+      </div>
+      <div class="title">
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="flex:1"><strong>${escapeHtml(t.title)}</strong><small class="muted"> — ${escapeHtml(t.desc||'')}</small></div>
+          <div class="muted tiny">#${t.id.slice(0,4)}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+          <div class="tiny muted">Category: ${category}</div>
+          ${category==='habits' ? `<div class="streak">Streak: ${t.streak||0}</div>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn completeBtn" data-cat="${category}" data-id="${t.id}" ${completed ? 'disabled':''}>${completed ? 'Done' : 'Complete'}</button>
+        <button class="btn secondary editBtn" data-cat="${category}" data-id="${t.id}">Edit</button>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+
+  // attach events
+  container.querySelectorAll('.completeBtn').forEach(b=>{
+    b.onclick = ()=> {
+      const cat = b.dataset.cat; const id = b.dataset.id;
+      completeTask(cat,id);
+      b.classList.add('celebrate');
+      setTimeout(()=>b.classList.remove('celebrate'),900);
+    }
+  });
+  container.querySelectorAll('.editBtn').forEach(b=>{
+    b.onclick = ()=> openEditModal(b.dataset.cat, b.dataset.id);
+  });
+}
+
+/* ---------- Shop ---------- */
+function renderShop(){
+  const el = document.getElementById('shopList');
+  el.innerHTML = '';
+  state.shop.forEach(item=>{
+    const row = document.createElement('div');
+    row.className='shop-item';
+    row.innerHTML = `<div>
+      <div style="font-weight:700">${escapeHtml(item.title)}</div>
+      <div class="muted tiny">${escapeHtml(item.desc)}</div>
+    </div>
+    <div class="flex">
+      <div class="muted tiny">${item.cost} GP</div>
+      <button class="btn" data-id="${item.id}">Buy</button>
+    </div>`;
+    el.appendChild(row);
+    row.querySelector('button').onclick = () => {
+      if(state.gp < item.cost){ alert('Not enough GP'); playTone(200,0.08); return; }
+      const confirmBuy = confirm(`Spend ${item.cost} GP for "${item.title}"?`);
+      if(!confirmBuy) return;
+      addGP(-item.cost);
+      awardBadge('purchase_'+item.id,{title:`Purchased ${item.title}`,desc:`Redeemed in shop`});
+      celebrate(`Purchased: ${item.title}`);
+    };
+  });
+}
+
+/* ---------- Streaks & Badges UI ---------- */
+function renderStreaks(){
+  const el = document.getElementById('streaksArea');
+  el.innerHTML = '';
+  state.tasks.habits.forEach(h=>{
+    const d = document.createElement('div');
+    d.className='badge';
+    d.innerHTML = `<div style="font-weight:700">${escapeHtml(h.title)}</div><div class="muted tiny">Current: ${h.streak||0}</div><div class="muted tiny">Last: ${h.last||'-'}</div>`;
+    el.appendChild(d);
+  });
+}
+function renderBadges(){
+  const el = document.getElementById('badgesArea');
+  el.innerHTML = '';
+  if(!state.badges || Object.keys(state.badges).length===0){
+    el.innerHTML = `<div class="muted tiny">No badges yet — earn streaks & complete tasks!</div>`;
+    return;
+  }
+  Object.values(state.badges).forEach(b=>{
+    const d = document.createElement('div');
+    d.className='badge';
+    d.innerHTML = `<div style="font-weight:700">${escapeHtml(b.title)}</div><div class="muted tiny">${escapeHtml(b.desc||'')}</div><div class="muted tiny">${new Date(b.date).toLocaleDateString()}</div>`;
+    el.appendChild(d);
+  });
+}
+
+/* ---------- Milestones ---------- */
+function renderMilestones(){
+  const el = document.getElementById('milestonesList');
+  el.innerHTML = '';
+  const levels = [5,10,20,50];
+  levels.forEach(l=>{
+    const achieved = state.level >= l;
+    const node = document.createElement('div');
+    node.style.padding = '6px'; node.style.borderRadius='8px';
+    node.style.marginBottom='6px';
+    node.style.background = achieved ? 'linear-gradient(90deg,var(--accent),var(--accent2))' : 'rgba(255,255,255,0.02)';
+    node.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">Level ${l}</div><div class="muted tiny">${achieved? 'Unlocked':'Locked'}</div></div>`;
+    el.appendChild(node);
+    if(achieved) awardBadge('lvl_' + l,{title:`Reached Level ${l}`,desc:`Level milestone`});
+  });
+}
+
+/* ---------- Modal / Add/Edit Task ---------- */
+function openEditModal(category, id){
+  const list = state.tasks[category];
+  const t = list.find(x=>x.id===id);
+  const title = prompt("Edit task title", t.title);
+  if(title===null) return;
+  t.title = title.trim() || t.title;
+  t.desc = prompt("Edit description", t.desc) || t.desc;
+  t.points = parseInt(prompt("GP value (points)", t.points || 1) || t.points) || t.points;
+  t.xp = parseInt(prompt("XP reward", t.xp || 10) || t.xp) || t.xp;
+  saveState(); syncUI();
+}
+
+document.getElementById('addTaskBtn').onclick = ()=>{
+  const cat = prompt("Category (daily / habits / boss)", "daily");
+  if(!['daily','habits','boss'].includes(cat)) return alert("Invalid category");
+  const title = prompt("Task title");
+  if(!title) return;
+  const desc = prompt("Description","");
+  const points = parseInt(prompt("GP points", "3") || "3");
+  const xp = parseInt(prompt("XP reward", String((points||3)*10)) || String((points||3)*10));
+  const newTask = {id:randId(), title, desc, points, xp, complete:false, streak:0, last:""};
+  state.tasks[cat].push(newTask);
+  saveState();
+  syncUI();
+}
+
+/* ---------- Small helpers ---------- */
+function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function celebrate(msg){
+  const el = document.createElement('div');
+  el.style.position='fixed'; el.style.right='18px'; el.style.bottom='18px';
+  el.style.padding='12px 16px'; el.style.borderRadius='12px'; el.style.background='linear-gradient(90deg,var(--accent),var(--accent2))';
+  el.style.color='#071026'; el.style.fontWeight='800'; el.style.boxShadow='0 10px 30px rgba(2,6,23,0.6)';
+  el.style.zIndex = 9999;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  el.classList.add('celebrate');
+  setTimeout(()=> el.style.opacity = '0', 2000);
+  setTimeout(()=> el.remove(), 2600);
+}
+
+/* ---------- Tabs ---------- */
+document.getElementById('mainTabs').addEventListener('click', (e)=>{
+  const t = e.target.closest('.tab');
+  if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const which = t.dataset.tab;
+  document.querySelectorAll('[data-content]').forEach(s=> s.style.display = (s.dataset.content === which) ? '' : 'none');
+});
+
+/* ---------- Reset / Export / Import ---------- */
+document.getElementById('resetDayBtn').onclick = ()=>{ dailyResetCheck(true); alert('Daily tasks reset'); };
+document.getElementById('exportBtn').onclick = ()=>{
+  const data = JSON.stringify(state, null, 2);
+  navigator.clipboard?.writeText(data).then(()=> alert('Save copied to clipboard'), ()=> alert('Clipboard not available — check console'));
+};
+document.getElementById('downloadSave').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'habit_gamify_save.json';
+  a.click(); URL.revokeObjectURL(url);
+};
+document.getElementById('importFile').addEventListener('change', async (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  try{
+    const txt = await f.text();
+    const parsed = JSON.parse(txt);
+    Object.assign(state, parsed);
+    saveState(); syncUI();
+    alert('Import loaded');
+  }catch(err){ alert('Import failed: ' + err.message); }
+});
+
+/* ---------- Download/Upload quick export button ---------- */
+document.getElementById('downloadSave').title = 'Download your save as JSON';
+
+/* ---------- Init & Daily check ---------- */
+dailyResetCheck(false);
+syncUI();
+
+/* ---------- Misc: simple achievement checks on load ---------- */
+(function initialAchievements(){
+  // level milestone badges check
+  [5,10,20,50].forEach(l=>{ if(state.level >= l) awardBadge('lvl_' + l,{title:`Reached level ${l}`,desc:'Milestone'}); });
+  // total completed badges
+  checkTotalCompletionBadges();
+})();
+
+/* ---------- Accessibility: keyboard shortcuts ---------- */
+window.addEventListener('keydown',(e)=>{
+  if(e.key === 'n' && (e.ctrlKey||e.metaKey)) { e.preventDefault(); document.getElementById('addTaskBtn').click(); }
+});
+
+</script>
+</body>
+</html>
