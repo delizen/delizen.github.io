@@ -1,1123 +1,1277 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daily AI News Brief</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    />
     <style>
-        :root {
-            --primary-color: #6366f1;
-            --primary-hover: #4f46e5;
-            --secondary-color: #06b6d4;
-            --accent-color: #f97316;
-            --background-color: #f9fafb;
-            --card-background: #ffffff;
-            --text-primary: #111827;
-            --text-secondary: #4b5563;
-            --border-color: #e5e7eb;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --warning-color: #f59e0b;
-            --info-color: #3b82f6;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        /* Dark mode colors - will be applied when .dark-mode class is added to body */
-        .dark-mode {
-            --primary-color: #818cf8;
-            --primary-hover: #6366f1;
-            --secondary-color: #22d3ee;
-            --accent-color: #fb923c;
-            --background-color: #111827;
-            --card-background: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --border-color: #374151;
-            --success-color: #34d399;
-            --error-color: #f87171;
-            --warning-color: #fbbf24;
-            --info-color: #60a5fa;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.26);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.24);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+      :root {
+        --primary-color: #6366f1;
+        --primary-hover: #4f46e5;
+        --secondary-color: #06b6d4;
+        --accent-color: #f97316;
+        --background-color: #f9fafb;
+        --card-background: #ffffff;
+        --text-primary: #111827;
+        --text-secondary: #4b5563;
+        --border-color: #e5e7eb;
+        --success-color: #10b981;
+        --error-color: #ef4444;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      /* Dark mode colors - will be applied when .dark-mode class is added to body */
+      .dark-mode {
+        --primary-color: #818cf8;
+        --primary-hover: #6366f1;
+        --secondary-color: #22d3ee;
+        --accent-color: #fb923c;
+        --background-color: #111827;
+        --card-background: #1f2937;
+        --text-primary: #f9fafb;
+        --text-secondary: #d1d5db;
+        --border-color: #374151;
+        --success-color: #34d399;
+        --error-color: #f87171;
+        --warning-color: #fbbf24;
+        --info-color: #60a5fa;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+          0 2px 4px -1px rgba(0, 0, 0, 0.26);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+          0 4px 6px -2px rgba(0, 0, 0, 0.25);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+          0 10px 10px -5px rgba(0, 0, 0, 0.24);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+          sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        line-height: 1.6;
+        padding: 1rem;
+        min-height: 100vh;
+      }
+
+      @media (min-width: 768px) {
         body {
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            line-height: 1.6;
-            padding: 1rem;
-            min-height: 100vh;
+          padding: 2rem;
         }
-        
-        @media (min-width: 768px) {
-            body {
-                padding: 2rem;
-            }
+      }
+
+      .container {
+        max-width: 1024px;
+        margin: 0 auto;
+      }
+
+      /* Header styles */
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.5rem 0;
+      }
+
+      .header-content {
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+
+      /* Card styles */
+      .card {
+        background-color: var(--card-background);
+        box-shadow: var(--shadow-lg);
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+      }
+
+      .card:hover {
+        box-shadow: var(--shadow-xl);
+        transform: translateY(-2px);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.625rem 1.25rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        border: none;
+        outline: none;
+        font-size: 0.9375rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-secondary {
+        background-color: var(--secondary-color);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-danger {
+        background-color: var(--error-color);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+      }
+
+      .btn-icon {
+        margin-right: 0.5rem;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        border: 3px solid var(--border-color);
+        border-top-color: var(--primary-color);
+        animation: spinner 1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+        box-shadow: var(--shadow-sm);
+      }
+
+      @keyframes spinner {
+        to {
+          transform: rotate(360deg);
         }
-        
-        .container {
-            max-width: 1024px;
-            margin: 0 auto;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
         }
-        
-        /* Header styles */
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      /* Custom markdown styling for the news list */
+      #news-content ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      #news-content li {
+        position: relative;
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        background-color: rgba(99, 102, 241, 0.05);
+        border-left: 4px solid var(--primary-color);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+      }
+
+      #news-content li:hover {
+        background-color: rgba(99, 102, 241, 0.08);
+        transform: translateX(4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      #news-content p {
+        margin-top: 0.75rem;
+      }
+
+      .citation-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        position: relative;
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        margin: 0.25rem 0;
+      }
+
+      .citation-link:hover {
+        background-color: rgba(99, 102, 241, 0.1);
+        text-decoration: underline;
+      }
+
+      .citation-link::after {
+        content: "→";
+        position: absolute;
+        opacity: 0;
+        right: -0.5rem;
+        transition: all 0.2s ease;
+      }
+
+      .citation-link:hover::after {
+        opacity: 1;
+        right: -1rem;
+      }
+
+      .refresh-icon {
+        transition: transform 0.5s ease;
+      }
+
+      .btn:hover .refresh-icon {
+        transform: rotate(180deg);
+      }
+
+      /* Form elements */
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--card-background);
+        background-clip: padding-box;
+        border: 1px solid var(--border-color);
+        border-radius: 0.375rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary-color);
+        outline: 0;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+      }
+
+      /* Header styles */
+      .header {
+        margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      @media (min-width: 768px) {
         .header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1.5rem 0;
-        }
-        
-        .header-content {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .header-actions {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-        
-        /* Card styles */
-        .card {
-            background-color: var(--card-background);
-            box-shadow: var(--shadow-lg);
-            border-radius: 1rem;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-        
-        .card:hover {
-            box-shadow: var(--shadow-xl);
-            transform: translateY(-2px);
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.625rem 1.25rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            box-shadow: var(--shadow-sm);
-            border: none;
-            outline: none;
-            font-size: 0.9375rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-danger {
-            background-color: var(--error-color);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-        }
-        
-        .btn-outline:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-        }
-        
-        .btn-icon {
-            margin-right: 0.5rem;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--primary-color);
-            animation: spinner 1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        @keyframes spinner {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        
-        .pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        /* Custom markdown styling for the news list */
-        #news-content ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        
-        #news-content li {
-            position: relative;
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            background-color: rgba(99, 102, 241, 0.05);
-            border-left: 4px solid var(--primary-color);
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        #news-content li:hover {
-            background-color: rgba(99, 102, 241, 0.08);
-            transform: translateX(4px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        #news-content p {
-            margin-top: 0.75rem;
-        }
-        
-        .citation-link {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            position: relative;
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            margin: 0.25rem 0;
-        }
-        
-        .citation-link:hover {
-            background-color: rgba(99, 102, 241, 0.1);
-            text-decoration: underline;
-        }
-        
-        .citation-link::after {
-            content: '→';
-            position: absolute;
-            opacity: 0;
-            right: -0.5rem;
-            transition: all 0.2s ease;
-        }
-        
-        .citation-link:hover::after {
-            opacity: 1;
-            right: -1rem;
-        }
-        
-        .refresh-icon {
-            transition: transform 0.5s ease;
-        }
-        
-        .btn:hover .refresh-icon {
-            transform: rotate(180deg);
-        }
-        
-        /* Form elements */
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-        
-        .form-control {
-            display: block;
-            width: 100%;
-            padding: 0.625rem 0.75rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            color: var(--text-primary);
-            background-color: var(--card-background);
-            background-clip: padding-box;
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            outline: 0;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-        }
-        
-        /* Header styles */
-        .header {
-            margin-bottom: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        @media (min-width: 768px) {
-            .header {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-        }
-        
-        .header-title {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            line-height: 1.2;
-            background: linear-gradient(135deg, var(--primary-color) 0%, #a855f7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
-        }
-        
-        .header-date {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            margin-top: 0.5rem;
-        }
-        
-        /* Theme toggle */
-        .theme-toggle {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            background-color: var(--card-background);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: var(--shadow-md);
-            z-index: 100;
-            transition: all 0.2s ease;
-            border: 1px solid var(--border-color);
-        }
-        
-        .theme-toggle:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .theme-toggle svg {
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-        
-        /* Dark mode specific styles */
-        .dark-mode .sun {
-            display: block;
-        }
-        
-        .dark-mode .moon {
-            display: none;
-        }
-        
-        .dark-mode .sun-beams {
-            display: block;
-        }
-        
-        .sun {
-            display: none;
-        }
-        
-        .sun-beams {
-            display: none;
-        }
-        
-        /* Utility classes */
-        .hidden {
-            display: none !important;
-        }
-        
-        .flex {
-            display: flex;
-        }
-        
-        .flex-col {
-            flex-direction: column;
-        }
-        
-        .items-center {
-            align-items: center;
-        }
-        
-        .justify-center {
-            justify-content: center;
-        }
-        
-        .justify-between {
-            justify-content: space-between;
-        }
-        
-        .gap-2 {
-            gap: 0.5rem;
-        }
-        
-        .gap-4 {
-            gap: 1rem;
-        }
-        
-        .mt-1 {
-            margin-top: 0.25rem;
-        }
-        
-        .mt-2 {
-            margin-top: 0.5rem;
-        }
-        
-        .mt-4 {
-            margin-top: 1rem;
-        }
-        
-        .mt-6 {
-            margin-top: 1.5rem;
-        }
-        
-        .mt-8 {
-            margin-top: 2rem;
-        }
-        
-        .mt-12 {
-            margin-top: 3rem;
-        }
-        
-        .mb-2 {
-            margin-bottom: 0.5rem;
-        }
-        
-        .mb-4 {
-            margin-bottom: 1rem;
-        }
-        
-        .mb-6 {
-            margin-bottom: 1.5rem;
-        }
-        
-        .mb-8 {
-            margin-bottom: 2rem;
-        }
-        
-        .p-4 {
-            padding: 1rem;
-        }
-        
-        .p-6 {
-            padding: 1.5rem;
-        }
-        
-        .p-8 {
-            padding: 2rem;
-        }
-        
-        .py-2 {
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
-        
-        .px-4 {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .text-sm {
-            font-size: 0.875rem;
-        }
-        
-        .text-lg {
-            font-size: 1.125rem;
-        }
-        
-        .text-xl {
-            font-size: 1.25rem;
-        }
-        
-        .text-2xl {
-            font-size: 1.5rem;
-        }
-        
-        .font-medium {
-            font-weight: 500;
-        }
-        
-        .font-semibold {
-            font-weight: 600;
-        }
-        
-        .font-bold {
-            font-weight: 700;
-        }
-        
-        .text-primary {
-            color: var(--primary-color);
-        }
-        
-        .text-secondary {
-            color: var(--text-secondary);
-        }
-        
-        .text-success {
-            color: var(--success-color);
-        }
-        
-        .text-error {
-            color: var(--error-color);
-        }
-        
-        .text-warning {
-            color: var(--warning-color);
-        }
-        
-        .text-info {
-            color: var(--info-color);
-        }
-        
-        .bg-primary {
-            background-color: var(--primary-color);
-        }
-        
-        .bg-success {
-            background-color: var(--success-color);
-        }
-        
-        .bg-error {
-            background-color: var(--error-color);
-        }
-        
-        .bg-warning {
-            background-color: var(--warning-color);
-        }
-        
-        .bg-info {
-            background-color: var(--info-color);
-        }
-        
-        .rounded-full {
-            border-radius: 9999px;
-        }
-        
-        .rounded-lg {
-            border-radius: 0.5rem;
-        }
-        
-        .rounded-xl {
-            border-radius: 0.75rem;
-        }
-        
-        .shadow-sm {
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .shadow-md {
-            box-shadow: var(--shadow-md);
-        }
-        
-        .shadow-lg {
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .shadow-xl {
-            box-shadow: var(--shadow-xl);
-        }
-        
-        .border {
-            border: 1px solid var(--border-color);
-        }
-        
-        .border-t {
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .grid {
-            display: grid;
-        }
-        
-        .grid-cols-1 {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-        }
-        
-        @media (min-width: 768px) {
-            .md\:grid-cols-2 {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-        
-        .gap-2 {
-            gap: 0.5rem;
-        }
-        
-        .space-y-3 > * + * {
-            margin-top: 0.75rem;
-        }
-        
-        .italic {
-            font-style: italic;
-        }
-        
-        .leading-relaxed {
-            line-height: 1.625;
-        }
-        
-        .status-indicator {
-            display: inline-block;
-            width: 0.75rem;
-            height: 0.75rem;
-            border-radius: 50%;
-            margin-right: 0.5rem;
-        }
-        
-        .status-success {
-            background-color: var(--success-color);
-        }
-        
-        .status-error {
-            background-color: var(--error-color);
-        }
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+
+      .header-title {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #a855f7 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+      }
+
+      .header-date {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+      }
+
+      /* Theme toggle */
+      .theme-toggle {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        background-color: var(--card-background);
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-md);
+        z-index: 100;
+        transition: all 0.2s ease;
+        border: 1px solid var(--border-color);
+      }
+
+      .theme-toggle:hover {
+        transform: scale(1.1);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .theme-toggle svg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      /* Dark mode specific styles */
+      .dark-mode .sun {
+        display: block;
+      }
+
+      .dark-mode .moon {
+        display: none;
+      }
+
+      .dark-mode .sun-beams {
+        display: block;
+      }
+
+      .sun {
+        display: none;
+      }
+
+      .sun-beams {
+        display: none;
+      }
+
+      /* Utility classes */
+      .hidden {
+        display: none !important;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .flex-col {
+        flex-direction: column;
+      }
+
+      .items-center {
+        align-items: center;
+      }
+
+      .justify-center {
+        justify-content: center;
+      }
+
+      .justify-between {
+        justify-content: space-between;
+      }
+
+      .gap-2 {
+        gap: 0.5rem;
+      }
+
+      .gap-4 {
+        gap: 1rem;
+      }
+
+      .mt-1 {
+        margin-top: 0.25rem;
+      }
+
+      .mt-2 {
+        margin-top: 0.5rem;
+      }
+
+      .mt-4 {
+        margin-top: 1rem;
+      }
+
+      .mt-6 {
+        margin-top: 1.5rem;
+      }
+
+      .mt-8 {
+        margin-top: 2rem;
+      }
+
+      .mt-12 {
+        margin-top: 3rem;
+      }
+
+      .mb-2 {
+        margin-bottom: 0.5rem;
+      }
+
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+
+      .mb-6 {
+        margin-bottom: 1.5rem;
+      }
+
+      .mb-8 {
+        margin-bottom: 2rem;
+      }
+
+      .p-4 {
+        padding: 1rem;
+      }
+
+      .p-6 {
+        padding: 1.5rem;
+      }
+
+      .p-8 {
+        padding: 2rem;
+      }
+
+      .py-2 {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+
+      .px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .text-sm {
+        font-size: 0.875rem;
+      }
+
+      .text-lg {
+        font-size: 1.125rem;
+      }
+
+      .text-xl {
+        font-size: 1.25rem;
+      }
+
+      .text-2xl {
+        font-size: 1.5rem;
+      }
+
+      .font-medium {
+        font-weight: 500;
+      }
+
+      .font-semibold {
+        font-weight: 600;
+      }
+
+      .font-bold {
+        font-weight: 700;
+      }
+
+      .text-primary {
+        color: var(--primary-color);
+      }
+
+      .text-secondary {
+        color: var(--text-secondary);
+      }
+
+      .text-success {
+        color: var(--success-color);
+      }
+
+      .text-error {
+        color: var(--error-color);
+      }
+
+      .text-warning {
+        color: var(--warning-color);
+      }
+
+      .text-info {
+        color: var(--info-color);
+      }
+
+      .bg-primary {
+        background-color: var(--primary-color);
+      }
+
+      .bg-success {
+        background-color: var(--success-color);
+      }
+
+      .bg-error {
+        background-color: var(--error-color);
+      }
+
+      .bg-warning {
+        background-color: var(--warning-color);
+      }
+
+      .bg-info {
+        background-color: var(--info-color);
+      }
+
+      .rounded-full {
+        border-radius: 9999px;
+      }
+
+      .rounded-lg {
+        border-radius: 0.5rem;
+      }
+
+      .rounded-xl {
+        border-radius: 0.75rem;
+      }
+
+      .shadow-sm {
+        box-shadow: var(--shadow-sm);
+      }
+
+      .shadow-md {
+        box-shadow: var(--shadow-md);
+      }
+
+      .shadow-lg {
+        box-shadow: var(--shadow-lg);
+      }
+
+      .shadow-xl {
+        box-shadow: var(--shadow-xl);
+      }
+
+      .border {
+        border: 1px solid var(--border-color);
+      }
+
+      .border-t {
+        border-top: 1px solid var(--border-color);
+      }
+
+      .grid {
+        display: grid;
+      }
+
+      .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+
+      @media (min-width: 768px) {
+        .md\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      .gap-2 {
+        gap: 0.5rem;
+      }
+
+      .space-y-3 > * + * {
+        margin-top: 0.75rem;
+      }
+
+      .italic {
+        font-style: italic;
+      }
+
+      .leading-relaxed {
+        line-height: 1.625;
+      }
+
+      .status-indicator {
+        display: inline-block;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+
+      .status-success {
+        background-color: var(--success-color);
+      }
+
+      .status-error {
+        background-color: var(--error-color);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" class="moon" />
-            <circle cx="12" cy="12" r="5" class="sun hidden" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" class="sun-beams hidden" />
-        </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          class="moon"
+        />
+        <circle cx="12" cy="12" r="5" class="sun hidden" />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+          class="sun-beams hidden"
+        />
+      </svg>
     </div>
 
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div>
-                <h1 class="header-title">AI Intelligence Briefing</h1>
-                <p id="current-date" class="header-date"></p>
-            </div>
-            <button id="refresh-button" class="btn btn-primary">
-                <svg class="refresh-icon btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                Refresh News
-            </button>
-        </header>
-
-        <!-- Main News Card -->
-        <div id="news-card" class="card">
-            <!-- API Key Form -->
-            <div id="api-key-form" class="p-6 mb-4 border-b">
-                <div class="form-group">
-                    <label for="gemini-api-key" class="form-label text-primary">Gemini API Key</label>
-                    <input 
-                        type="password" 
-                        id="gemini-api-key" 
-                        class="form-control"
-                        placeholder="Enter your Gemini API key" 
-                        autocomplete="off"
-                    >
-                    <div id="api-status" class="flex items-center mt-2 text-sm text-error">
-                        <span class="status-indicator status-error"></span>
-                        <span>API key not set</span>
-                    </div>
-                </div>
-                <div class="flex gap-2 mt-4 flex-wrap">
-                    <button id="save-api-key" class="btn btn-primary btn-sm">Save API Key</button>
-                    <button id="clear-api-key" class="btn btn-danger btn-sm">Clear Key</button>
-                    <button id="toggle-mock-data" class="btn btn-outline btn-sm">Use Mock Data</button>
-                </div>
-                <p class="mt-2 text-sm text-secondary">Your API key is stored securely in your browser's local storage.</p>
-            </div>
-            
-            <div id="loading-state" class="flex flex-col items-center justify-center p-12">
-                <div class="loading-spinner"></div>
-                <p class="mt-6 text-lg font-medium">Gathering the latest AI headlines...</p>
-                <p class="text-sm text-secondary mt-2">Connecting to Gemini API</p>
-            </div>
-
-            <div id="content-state" class="hidden p-6">
-                <div class="flex items-center mb-6">
-                    <div class="w-2 h-8 bg-primary rounded-full mr-3"></div>
-                    <h2 class="text-2xl font-bold">Top Developments Today</h2>
-                </div>
-                
-                <div id="news-content" class="leading-relaxed">
-                    <!-- News Summary will be inserted here -->
-                </div>
-
-                <div id="sources-container" class="mt-10 pt-6 border-t">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <svg class="btn-icon text-primary" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                        </svg>
-                        Sources
-                    </h3>
-                    <div id="citation-list" class="text-sm space-y-3 text-secondary grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <!-- Citations will be inserted here -->
-                    </div>
-                    <p id="no-sources" class="text-sm text-secondary italic hidden mt-2">No external sources were directly cited for this summary.</p>
-                </div>
-            </div>
+      <!-- Header -->
+      <header class="header">
+        <div>
+          <h1 class="header-title">AI Intelligence Briefing</h1>
+          <p id="current-date" class="header-date"></p>
         </div>
-        
-        <!-- Error State -->
-        <div id="error-state" class="hidden mt-8 card p-6 bg-error bg-opacity-5">
-            <div class="flex items-center mb-4">
-                <svg class="btn-icon text-error" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p class="font-semibold text-error">Error retrieving news</p>
+        <button id="refresh-button" class="btn btn-primary">
+          <svg
+            class="refresh-icon btn-icon"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            ></path>
+          </svg>
+          Refresh News
+        </button>
+      </header>
+
+      <!-- Main News Card -->
+      <div id="news-card" class="card">
+        <!-- API Key Form -->
+        <div id="api-key-form" class="p-6 mb-4 border-b">
+          <div class="form-group">
+            <label for="gemini-api-key" class="form-label text-primary"
+              >Gemini API Key</label
+            >
+            <input
+              type="password"
+              id="gemini-api-key"
+              class="form-control"
+              placeholder="Enter your Gemini API key"
+              autocomplete="off"
+            />
+            <div
+              id="api-status"
+              class="flex items-center mt-2 text-sm text-error"
+            >
+              <span class="status-indicator status-error"></span>
+              <span>API key not set</span>
             </div>
-            <p id="error-message" class="mt-2 text-sm"></p>
-            <button id="retry-button" class="mt-4 btn btn-danger">
-                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                Try Again
+          </div>
+          <div class="flex gap-2 mt-4 flex-wrap">
+            <button id="save-api-key" class="btn btn-primary btn-sm">
+              Save API Key
             </button>
+            <button id="clear-api-key" class="btn btn-danger btn-sm">
+              Clear Key
+            </button>
+            <button id="toggle-mock-data" class="btn btn-outline btn-sm">
+              Use Mock Data
+            </button>
+          </div>
+          <p class="mt-2 text-sm text-secondary">
+            Your API key is stored securely in your browser's local storage.
+          </p>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-12 text-center text-secondary text-sm">
-            <p>Powered by Google Gemini API</p>
-            <p class="mt-1">© 2023 Delizen</p>
-        </footer>
+        <div
+          id="loading-state"
+          class="flex flex-col items-center justify-center p-12"
+        >
+          <div class="loading-spinner"></div>
+          <p class="mt-6 text-lg font-medium">
+            Gathering the latest AI headlines...
+          </p>
+          <p class="text-sm text-secondary mt-2">Connecting to Gemini API</p>
+        </div>
+
+        <div id="content-state" class="hidden p-6">
+          <div class="flex items-center mb-6">
+            <div class="w-2 h-8 bg-primary rounded-full mr-3"></div>
+            <h2 class="text-2xl font-bold">Top Developments Today</h2>
+          </div>
+
+          <div id="news-content" class="leading-relaxed">
+            <!-- News Summary will be inserted here -->
+          </div>
+
+          <div id="sources-container" class="mt-10 pt-6 border-t">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+              <svg
+                class="btn-icon text-primary"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                ></path>
+              </svg>
+              Sources
+            </h3>
+            <div
+              id="citation-list"
+              class="text-sm space-y-3 text-secondary grid grid-cols-1 md:grid-cols-2 gap-2"
+            >
+              <!-- Citations will be inserted here -->
+            </div>
+            <p
+              id="no-sources"
+              class="text-sm text-secondary italic hidden mt-2"
+            >
+              No external sources were directly cited for this summary.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div id="error-state" class="hidden mt-8 card p-6 bg-error bg-opacity-5">
+        <div class="flex items-center mb-4">
+          <svg
+            class="btn-icon text-error"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <p class="font-semibold text-error">Error retrieving news</p>
+        </div>
+        <p id="error-message" class="mt-2 text-sm"></p>
+        <button id="retry-button" class="mt-4 btn btn-danger">
+          <svg
+            class="btn-icon"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            ></path>
+          </svg>
+          Try Again
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-12 text-center text-secondary text-sm">
+        <p>Powered by Google Gemini API</p>
+        <p class="mt-1">© 2023 Delizen</p>
+      </footer>
     </div>
 
     <script type="module">
-        // Local Storage Keys
-        const API_KEY_STORAGE_KEY = 'delizen_gemini_api_key';
-        const USE_MOCK_DATA_KEY = 'delizen_use_mock_data';
-        const THEME_STORAGE_KEY = 'delizen_theme_preference';
-        
-        // Mock data for local testing
-        const MOCK_DATA = {
-            text: `- OpenAI has released GPT-5, featuring enhanced reasoning capabilities and improved factual accuracy, setting new benchmarks on various AI evaluation metrics.
+      // Local Storage Keys
+      const API_KEY_STORAGE_KEY = "delizen_gemini_api_key";
+      const USE_MOCK_DATA_KEY = "delizen_use_mock_data";
+      const THEME_STORAGE_KEY = "delizen_theme_preference";
+
+      // Mock data for local testing
+      const MOCK_DATA = {
+        text: `- OpenAI has released GPT-5, featuring enhanced reasoning capabilities and improved factual accuracy, setting new benchmarks on various AI evaluation metrics.
 - Google DeepMind announced a breakthrough in protein folding prediction with AlphaFold 3, capable of modeling complex protein interactions with unprecedented accuracy.
 - The EU Parliament has approved the final draft of the AI Act, establishing comprehensive regulations for AI systems based on their risk levels, with implementation beginning next year.`,
-            sources: [
-                { uri: "https://openai.com/blog/gpt-5", title: "OpenAI Introduces GPT-5 with Advanced Reasoning" },
-                { uri: "https://deepmind.google/discover/blog/alphafold-3-advances", title: "AlphaFold 3: A Major Leap in Protein Structure Prediction" },
-                { uri: "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai", title: "EU AI Act: Final Approval Marks Historic Regulation" }
-            ]
-        };
-        
-        // Configuration (will be updated from localStorage)
-        let apiKey = '';
-        let useMockData = true;
-        let darkMode = false;
-        
-        // --- API Key Management ---
-        
-        function loadApiKey() {
-            const savedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
-            if (savedApiKey) {
-                apiKey = savedApiKey;
-                document.getElementById('gemini-api-key').value = '••••••••••••••••';
-                updateApiStatus(true);
-            }
-            
-            const mockDataSetting = localStorage.getItem(USE_MOCK_DATA_KEY);
-            if (mockDataSetting !== null) {
-                useMockData = mockDataSetting === 'true';
-                updateMockDataButton();
-            }
+        sources: [
+          {
+            uri: "https://openai.com/blog/gpt-5",
+            title: "OpenAI Introduces GPT-5 with Advanced Reasoning",
+          },
+          {
+            uri: "https://deepmind.google/discover/blog/alphafold-3-advances",
+            title: "AlphaFold 3: A Major Leap in Protein Structure Prediction",
+          },
+          {
+            uri: "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+            title: "EU AI Act: Final Approval Marks Historic Regulation",
+          },
+        ],
+      };
+
+      // Configuration (will be updated from localStorage)
+      let apiKey = "";
+      let useMockData = true;
+      let darkMode = false;
+
+      // --- API Key Management ---
+
+      function loadApiKey() {
+        const savedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+        if (savedApiKey) {
+          apiKey = savedApiKey;
+          document.getElementById("gemini-api-key").value = "••••••••••••••••";
+          updateApiStatus(true);
         }
-        
-        function saveApiKey() {
-            const inputElement = document.getElementById('gemini-api-key');
-            const newApiKey = inputElement.value.trim();
-            
-            if (!newApiKey) {
-                alert('Please enter a valid API key');
-                return;
-            }
-            
-            // Save to localStorage
-            localStorage.setItem(API_KEY_STORAGE_KEY, newApiKey);
-            apiKey = newApiKey;
-            
-            // Update UI
-            inputElement.value = '••••••••••••••••';
-            updateApiStatus(true);
-            
-            // If we have an API key, we can use real data
-            if (apiKey) {
-                useMockData = false;
-                localStorage.setItem(USE_MOCK_DATA_KEY, 'false');
-                updateMockDataButton();
-                
-                // Refresh news with real data
-                refreshNews();
-            }
+
+        const mockDataSetting = localStorage.getItem(USE_MOCK_DATA_KEY);
+        if (mockDataSetting !== null) {
+          useMockData = mockDataSetting === "true";
+          updateMockDataButton();
         }
-        
-        function clearApiKey() {
-            localStorage.removeItem(API_KEY_STORAGE_KEY);
-            apiKey = '';
-            document.getElementById('gemini-api-key').value = '';
-            updateApiStatus(false);
-            
-            // If we don't have an API key, we must use mock data
-            useMockData = true;
-            localStorage.setItem(USE_MOCK_DATA_KEY, 'true');
-            updateMockDataButton();
-            
-            // Refresh with mock data
-            refreshNews();
+      }
+
+      function saveApiKey() {
+        const inputElement = document.getElementById("gemini-api-key");
+        const newApiKey = inputElement.value.trim();
+
+        if (!newApiKey) {
+          alert("Please enter a valid API key");
+          return;
         }
-        
-        function toggleMockData() {
-            useMockData = !useMockData;
-            localStorage.setItem(USE_MOCK_DATA_KEY, useMockData.toString());
-            updateMockDataButton();
-            
-            // Refresh with new setting
-            refreshNews();
+
+        // Save to localStorage
+        localStorage.setItem(API_KEY_STORAGE_KEY, newApiKey);
+        apiKey = newApiKey;
+
+        // Update UI
+        inputElement.value = "••••••••••••••••";
+        updateApiStatus(true);
+
+        // If we have an API key, we can use real data
+        if (apiKey) {
+          useMockData = false;
+          localStorage.setItem(USE_MOCK_DATA_KEY, "false");
+          updateMockDataButton();
+
+          // Refresh news with real data
+          refreshNews();
         }
-        
-        function updateApiStatus(isConnected) {
-            const statusElement = document.getElementById('api-status');
-            if (!statusElement) return;
-            
-            if (isConnected) {
-                statusElement.innerHTML = `
+      }
+
+      function clearApiKey() {
+        localStorage.removeItem(API_KEY_STORAGE_KEY);
+        apiKey = "";
+        document.getElementById("gemini-api-key").value = "";
+        updateApiStatus(false);
+
+        // If we don't have an API key, we must use mock data
+        useMockData = true;
+        localStorage.setItem(USE_MOCK_DATA_KEY, "true");
+        updateMockDataButton();
+
+        // Refresh with mock data
+        refreshNews();
+      }
+
+      function toggleMockData() {
+        useMockData = !useMockData;
+        localStorage.setItem(USE_MOCK_DATA_KEY, useMockData.toString());
+        updateMockDataButton();
+
+        // Refresh with new setting
+        refreshNews();
+      }
+
+      function updateApiStatus(isConnected) {
+        const statusElement = document.getElementById("api-status");
+        if (!statusElement) return;
+
+        if (isConnected) {
+          statusElement.innerHTML = `
                     <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
                     <span class="text-green-600">API key saved</span>
                 `;
-            } else {
-                statusElement.innerHTML = `
+        } else {
+          statusElement.innerHTML = `
                     <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
                     <span class="text-red-600">API key not set</span>
                 `;
-            }
         }
-        
-        function updateMockDataButton() {
-            const button = document.getElementById('toggle-mock-data');
-            button.textContent = useMockData ? 'Using Mock Data' : 'Use Mock Data';
-            
-            if (useMockData) {
-                button.classList.add('btn-secondary');
-            } else {
-                button.classList.remove('btn-secondary');
-            }
+      }
+
+      function updateMockDataButton() {
+        const button = document.getElementById("toggle-mock-data");
+        button.textContent = useMockData ? "Using Mock Data" : "Use Mock Data";
+
+        if (useMockData) {
+          button.classList.add("btn-secondary");
+        } else {
+          button.classList.remove("btn-secondary");
         }
-        
-        // --- Utility Functions ---
+      }
 
-        function updateDate() {
-            const dateElement = document.getElementById('current-date');
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            dateElement.textContent = new Date().toLocaleDateString('en-US', options);
-        }
+      // --- Utility Functions ---
 
-        // Simple function to convert markdown list to HTML for display
-        function convertMarkdownListToHtml(markdown) {
-            const lines = markdown.split('\n');
-            let html = '<ul>';
-            lines.forEach(line => {
-                if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
-                    const content = line.trim().substring(2).trim();
-                    html += `<li>${content}</li>`;
-                } else if (line.trim().length > 0) {
-                    html += `<li>${line.trim()}</li>`; // Handle case where list marker might be missing
-                }
-            });
-            html += '</ul>';
-            return html;
-        }
+      function updateDate() {
+        const dateElement = document.getElementById("current-date");
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        };
+        dateElement.textContent = new Date().toLocaleDateString(
+          "en-US",
+          options
+        );
+      }
 
-        /**
-         * Parses the API response to extract the generated text and grounding sources.
-         * @param {object} result - The parsed JSON response from the Gemini API.
-         * @returns {{text: string, sources: {uri: string, title: string}[]}}
-         */
-        function parseGeminiResponse(result) {
-            const candidate = result.candidates?.[0];
-            let text = '';
-            let sources = [];
+      // Simple function to convert markdown list to HTML for display
+      function convertMarkdownListToHtml(markdown) {
+        const lines = markdown.split("\n");
+        let html = "<ul>";
+        lines.forEach((line) => {
+          if (line.trim().startsWith("* ") || line.trim().startsWith("- ")) {
+            const content = line.trim().substring(2).trim();
+            html += `<li>${content}</li>`;
+          } else if (line.trim().length > 0) {
+            html += `<li>${line.trim()}</li>`; // Handle case where list marker might be missing
+          }
+        });
+        html += "</ul>";
+        return html;
+      }
 
-            if (candidate && candidate.content?.parts?.[0]?.text) {
-                text = candidate.content.parts[0].text;
-                
-                const groundingMetadata = candidate.groundingMetadata;
-                if (groundingMetadata && groundingMetadata.groundingAttributions) {
-                    sources = groundingMetadata.groundingAttributions
-                        .map(attribution => ({
-                            uri: attribution.web?.uri,
-                            title: attribution.web?.title,
-                        }))
-                        .filter(source => source.uri && source.title); // Ensure sources are valid
-                }
-            }
+      /**
+       * Parses the API response to extract the generated text and grounding sources.
+       * @param {object} result - The parsed JSON response from the Gemini API.
+       * @returns {{text: string, sources: {uri: string, title: string}[]}}
+       */
+      function parseGeminiResponse(result) {
+        const candidate = result.candidates?.[0];
+        let text = "";
+        let sources = [];
 
-            return { text, sources };
-        }
+        if (candidate && candidate.content?.parts?.[0]?.text) {
+          text = candidate.content.parts[0].text;
 
-        // --- Core Logic ---
-
-        async function fetchAINews() {
-            // Show loading state
-            document.getElementById('loading-state').classList.remove('hidden');
-            document.getElementById('content-state').classList.add('hidden');
-            document.getElementById('error-state').classList.add('hidden');
-            
-            // Use mock data for local testing if enabled
-            if (useMockData) {
-                // Simulate network delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                return { mockData: MOCK_DATA };
-            }
-            
-            // Check if API key is provided
-            if (!apiKey) {
-                throw new Error("API key is required. Please add your Gemini API key to use this feature.");
-            }
-            //`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            
-            const systemPrompt = "You are a professional AI News Editor. Summarize the top 3 most important AI news developments and breakthroughs from the last 24 hours in a single, well-formatted Markdown list. Each item should be concise (1-2 sentences) and capture the essence of the news. Do not include any introductory or concluding remarks, just the list. Use markdown bullet points (* or -) for the list.";
-            
-            const userQuery = "Provide today's top AI news briefing. Focus on research breakthroughs, major company announcements, and regulatory updates.";
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                // Use Google Search grounding to fetch real-time news
-                tools: [{ "google_search": {} }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
-            };
-
-            const maxRetries = 5;
-            let delay = 1000; // 1 second
-            
-            for (let attempt = 0; attempt < maxRetries; attempt++) {
-                try {
-                    // Create an AbortController with a timeout
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-                    
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API returned status ${response.status}: ${errorData.error.message}`);
-                    }
-
-                    const result = await response.json();
-                    return result;
-
-                } catch (error) {
-                    console.error(`Attempt ${attempt + 1} failed:`, error.message);
-                    if (attempt < maxRetries - 1) {
-                        // Implement exponential backoff
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        delay *= 2;
-                    } else {
-                        throw new Error(`Failed to fetch AI news after ${maxRetries} attempts. Details: ${error.message}`);
-                    }
-                }
-            }
+          const groundingMetadata = candidate.groundingMetadata;
+          if (groundingMetadata && groundingMetadata.groundingAttributions) {
+            sources = groundingMetadata.groundingAttributions
+              .map((attribution) => ({
+                uri: attribution.web?.uri,
+                title: attribution.web?.title,
+              }))
+              .filter((source) => source.uri && source.title); // Ensure sources are valid
+          }
         }
 
-        function renderNews(newsText, sources) {
-            const newsContent = document.getElementById('news-content');
-            const citationList = document.getElementById('citation-list');
-            const noSources = document.getElementById('no-sources');
-            const loadingState = document.getElementById('loading-state');
-            const contentState = document.getElementById('content-state');
-            const errorState = document.getElementById('error-state');
+        return { text, sources };
+      }
 
-            // Check if elements exist
-            if (!newsContent || !citationList) {
-                console.error('Required DOM elements not found');
-                return;
-            }
+      // --- Core Logic ---
 
-            // 1. Render the News Summary
-            newsContent.innerHTML = convertMarkdownListToHtml(newsText);
-            
-            // 2. Render the Citations
-            citationList.innerHTML = '';
-            if (sources && sources.length > 0) {
-                if (noSources) noSources.classList.add('hidden');
-                sources.forEach(source => {
-                    if (!source.uri) return;
-                    const link = document.createElement('a');
-                    link.href = source.uri;
-                    link.textContent = source.title || source.uri;
-                    link.target = "_blank";
-                    link.rel = "noopener noreferrer";
-                    link.className = "citation-link block truncate text-indigo-600 hover:text-indigo-800 py-1";
-                    citationList.appendChild(link);
-                });
-            } else {
-                if (noSources) noSources.classList.remove('hidden');
-            }
+      async function fetchAINews() {
+        // Show loading state
+        document.getElementById("loading-state").classList.remove("hidden");
+        document.getElementById("content-state").classList.add("hidden");
+        document.getElementById("error-state").classList.add("hidden");
 
-            // 3. Update UI state
-            if (loadingState) loadingState.classList.add('hidden');
-            if (contentState) contentState.classList.remove('hidden');
-            if (errorState) errorState.classList.add('hidden');
+        // Use mock data for local testing if enabled
+        if (useMockData) {
+          // Simulate network delay
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          return { mockData: MOCK_DATA };
         }
 
-        function renderError(message) {
-            const loadingState = document.getElementById('loading-state');
-            const contentState = document.getElementById('content-state');
-            const errorState = document.getElementById('error-state');
-            const errorMessage = document.getElementById('error-message');
-            
-            if (loadingState) loadingState.classList.add('hidden');
-            if (contentState) contentState.classList.add('hidden');
-            if (errorState) errorState.classList.remove('hidden');
-            if (errorMessage) errorMessage.textContent = message || 'An unknown error occurred';
-            
-            console.error('Error:', message);
+        // Check if API key is provided
+        if (!apiKey) {
+          throw new Error(
+            "API key is required. Please add your Gemini API key to use this feature."
+          );
         }
+        //`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-        // --- Event Handlers ---
-        
-        async function refreshNews() {
-            try {
-                const response = await fetchAINews();
-                
-                // Handle mock data
-                if (response.mockData) {
-                    renderNews(response.mockData.text, response.mockData.sources);
-                    return;
-                }
-                
-                // Handle real API response
-                const { text, sources } = parseGeminiResponse(response);
-                if (text) {
-                    renderNews(text, sources);
-                } else {
-                    renderError("The model returned an empty response. Please try again.");
-                }
-            } catch (error) {
-                renderError(error.message);
-            }
-        }
+        const systemPrompt =
+          "You are a professional AI News Editor. Summarize the top 3 most important AI news developments and breakthroughs from the last 24 hours in a single, well-formatted Markdown list. Each item should be concise (1-2 sentences) and capture the essence of the news. Do not include any introductory or concluding remarks, just the list. Use markdown bullet points (* or -) for the list.";
 
-        // --- Theme Management ---
-        
-        function loadThemePreference() {
-            const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                darkMode = true;
-            }
-        }
-        
-        function toggleTheme() {
-            darkMode = document.body.classList.toggle('dark-mode');
-            localStorage.setItem(THEME_STORAGE_KEY, darkMode ? 'dark' : 'light');
-        }
-        
-        // --- Initialization ---
+        const userQuery =
+          "Provide today's top AI news briefing. Focus on research breakthroughs, major company announcements, and regulatory updates.";
 
-        window.onload = async () => {
-            updateDate();
-            
-            // Load theme and API key from localStorage
-            loadThemePreference();
-            loadApiKey();
-            
-            // Add event listeners
-            document.getElementById('refresh-button').addEventListener('click', refreshNews);
-            document.getElementById('retry-button').addEventListener('click', refreshNews);
-            document.getElementById('save-api-key').addEventListener('click', saveApiKey);
-            document.getElementById('clear-api-key').addEventListener('click', clearApiKey);
-            document.getElementById('toggle-mock-data').addEventListener('click', toggleMockData);
-            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-            
-            // Handle Enter key in API key input
-            document.getElementById('gemini-api-key').addEventListener('keyup', (event) => {
-                if (event.key === 'Enter') {
-                    saveApiKey();
-                }
-            });
-            
-            // Initial fetch
-            refreshNews();
+        const payload = {
+          contents: [{ parts: [{ text: userQuery }] }],
+          // Use Google Search grounding to fetch real-time news
+          tools: [{ google_search: {} }],
+          systemInstruction: {
+            parts: [{ text: systemPrompt }],
+          },
         };
 
-    </script>
-</body>
-</html>
+        const maxRetries = 5;
+        let delay = 1000; // 1 second
 
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+          try {
+            // Create an AbortController with a timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+              signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(
+                `API returned status ${response.status}: ${errorData.error.message}`
+              );
+            }
+
+            const result = await response.json();
+            return result;
+          } catch (error) {
+            console.error(`Attempt ${attempt + 1} failed:`, error.message);
+            if (attempt < maxRetries - 1) {
+              // Implement exponential backoff
+              await new Promise((resolve) => setTimeout(resolve, delay));
+              delay *= 2;
+            } else {
+              throw new Error(
+                `Failed to fetch AI news after ${maxRetries} attempts. Details: ${error.message}`
+              );
+            }
+          }
+        }
+      }
+
+      function renderNews(newsText, sources) {
+        const newsContent = document.getElementById("news-content");
+        const citationList = document.getElementById("citation-list");
+        const noSources = document.getElementById("no-sources");
+        const loadingState = document.getElementById("loading-state");
+        const contentState = document.getElementById("content-state");
+        const errorState = document.getElementById("error-state");
+
+        // Check if elements exist
+        if (!newsContent || !citationList) {
+          console.error("Required DOM elements not found");
+          return;
+        }
+
+        // 1. Render the News Summary
+        newsContent.innerHTML = convertMarkdownListToHtml(newsText);
+
+        // 2. Render the Citations
+        citationList.innerHTML = "";
+        if (sources && sources.length > 0) {
+          if (noSources) noSources.classList.add("hidden");
+          sources.forEach((source) => {
+            if (!source.uri) return;
+            const link = document.createElement("a");
+            link.href = source.uri;
+            link.textContent = source.title || source.uri;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.className =
+              "citation-link block truncate text-indigo-600 hover:text-indigo-800 py-1";
+            citationList.appendChild(link);
+          });
+        } else {
+          if (noSources) noSources.classList.remove("hidden");
+        }
+
+        // 3. Update UI state
+        if (loadingState) loadingState.classList.add("hidden");
+        if (contentState) contentState.classList.remove("hidden");
+        if (errorState) errorState.classList.add("hidden");
+      }
+
+      function renderError(message) {
+        const loadingState = document.getElementById("loading-state");
+        const contentState = document.getElementById("content-state");
+        const errorState = document.getElementById("error-state");
+        const errorMessage = document.getElementById("error-message");
+
+        if (loadingState) loadingState.classList.add("hidden");
+        if (contentState) contentState.classList.add("hidden");
+        if (errorState) errorState.classList.remove("hidden");
+        if (errorMessage)
+          errorMessage.textContent = message || "An unknown error occurred";
+
+        console.error("Error:", message);
+      }
+
+      // --- Event Handlers ---
+
+      async function refreshNews() {
+        try {
+          const response = await fetchAINews();
+
+          // Handle mock data
+          if (response.mockData) {
+            renderNews(response.mockData.text, response.mockData.sources);
+            return;
+          }
+
+          // Handle real API response
+          const { text, sources } = parseGeminiResponse(response);
+          if (text) {
+            renderNews(text, sources);
+          } else {
+            renderError(
+              "The model returned an empty response. Please try again."
+            );
+          }
+        } catch (error) {
+          renderError(error.message);
+        }
+      }
+
+      // --- Theme Management ---
+
+      function loadThemePreference() {
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme === "dark") {
+          document.body.classList.add("dark-mode");
+          darkMode = true;
+        }
+      }
+
+      function toggleTheme() {
+        darkMode = document.body.classList.toggle("dark-mode");
+        localStorage.setItem(THEME_STORAGE_KEY, darkMode ? "dark" : "light");
+      }
+
+      // --- Initialization ---
+
+      window.onload = async () => {
+        updateDate();
+
+        // Load theme and API key from localStorage
+        loadThemePreference();
+        loadApiKey();
+
+        // Add event listeners
+        document
+          .getElementById("refresh-button")
+          .addEventListener("click", refreshNews);
+        document
+          .getElementById("retry-button")
+          .addEventListener("click", refreshNews);
+        document
+          .getElementById("save-api-key")
+          .addEventListener("click", saveApiKey);
+        document
+          .getElementById("clear-api-key")
+          .addEventListener("click", clearApiKey);
+        document
+          .getElementById("toggle-mock-data")
+          .addEventListener("click", toggleMockData);
+        document
+          .getElementById("theme-toggle")
+          .addEventListener("click", toggleTheme);
+
+        // Handle Enter key in API key input
+        document
+          .getElementById("gemini-api-key")
+          .addEventListener("keyup", (event) => {
+            if (event.key === "Enter") {
+              saveApiKey();
+            }
+          });
+
+        // Initial fetch
+        refreshNews();
+      };
+    </script>
+  </body>
+</html>
