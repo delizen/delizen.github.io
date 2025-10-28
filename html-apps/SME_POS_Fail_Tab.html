@@ -623,7 +623,7 @@
       }
 
       .tab-content.active {
-        display: block;
+        display: block !important;
       }
 
 
@@ -647,12 +647,6 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1rem;
-      }
-      
-      .settings-container {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
       }
 
       @keyframes slideIn {
@@ -863,58 +857,59 @@
             </div>
           </div>
         </div>
-        </div>
       </div>
 
       <!-- Settings Tab -->
       <div id="settings-tab" class="tab-content">
-        <div class="settings-container">
-          <div class="settings-section">
-            <h3>Product Management</h3>
-            <div class="settings-grid">
-              <button id="add-product-btn" class="btn btn-secondary">
-                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                Add Product
-              </button>
-              <button id="reset-products-btn" class="btn btn-outline">
-                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                Reset to Default Products
-              </button>
-              <button id="clear-products-btn" class="btn btn-danger">
-                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-                Clear All Products
-              </button>
-            </div>
+        <div style="background: yellow; padding: 10px; margin: 10px 0; border: 2px solid red;">
+          <h3>🔧 Settings Tab is Working!</h3>
+          <p>If you can see this, the Settings tab is displaying correctly.</p>
+        </div>
+        <div class="settings-section">
+          <h3>Product Management</h3>
+          <div class="settings-grid">
+            <button id="add-product-btn" class="btn btn-secondary">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Add Product
+            </button>
+            <button id="reset-products-btn" class="btn btn-outline">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Reset to Default Products
+            </button>
+            <button id="clear-products-btn" class="btn btn-danger">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Clear All Products
+            </button>
           </div>
+        </div>
 
-          <div class="settings-section">
-            <h3>Sales Management</h3>
-            <div class="settings-grid">
-              <button id="clear-history-btn" class="btn btn-danger">
-                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-                Clear Sales History
-              </button>
-            </div>
+        <div class="settings-section">
+          <h3>Sales Management</h3>
+          <div class="settings-grid">
+            <button id="clear-history-btn" class="btn btn-danger">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Clear Sales History
+            </button>
           </div>
+        </div>
 
-          <div class="settings-section">
-            <h3>Tax Settings</h3>
-            <div class="settings-grid">
-              <button id="edit-tax-btn" class="btn btn-outline">
-                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                </svg>
-                Edit Tax Rate
-              </button>
-            </div>
+        <div class="settings-section">
+          <h3>Tax Settings</h3>
+          <div class="settings-grid">
+            <button id="edit-tax-btn" class="btn btn-outline">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+              </svg>
+              Edit Tax Rate
+            </button>
           </div>
         </div>
       </div>
@@ -1584,10 +1579,27 @@
         // Tab switching functionality
         document.querySelectorAll('.tab').forEach(tab => {
           tab.addEventListener('click', () => {
+            console.log('Tab clicked:', tab.textContent.trim());
+            
+            // Remove active class from all tabs and content
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => {
+              c.classList.remove('active');
+              c.style.display = 'none';
+            });
+            
+            // Add active class to clicked tab and corresponding content
             tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            const targetContent = document.getElementById(tabId);
+            
+            if (targetContent) {
+              targetContent.classList.add('active');
+              targetContent.style.display = 'block';
+              console.log('Tab content activated:', tabId);
+            } else {
+              console.error('Tab content not found:', tabId);
+            }
           });
         });
 
@@ -1646,3 +1658,4 @@
     </script>
   </body>
 </html>
+
