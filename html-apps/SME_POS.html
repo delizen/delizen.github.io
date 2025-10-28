@@ -902,6 +902,18 @@
                 </svg>
                 Clear Sales History
               </button>
+              <button id="export-sales-btn" class="btn btn-outline">
+                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Export Sales CSV
+              </button>
+              <button id="import-sales-btn" class="btn btn-outline">
+                  <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                  </svg>
+                  Import Sales CSV
+              </button>
             </div>
           </div>
 
@@ -1605,6 +1617,8 @@
             showToast("All products cleared.", 'success');
           }
         });
+        document.getElementById('export-sales-btn').addEventListener('click', exportSalesToCSV);
+        document.getElementById('import-sales-btn').addEventListener('click', importSalesFromCSV);
       }
 
       // Clear Sales History function
@@ -1615,6 +1629,114 @@
           updateSalesSummary();
           showToast('Sales history cleared successfully', 'success');
         }
+      }
+
+      // Export Sales to CSV
+      function exportSalesToCSV() {
+        if (sales.length === 0) {
+          showToast("No sales history to export.", "warning");
+          return;
+        }
+
+        const headers = ["id", "date", "subtotal", "tax", "total", "items"];
+        
+        const salesCsvRows = sales.map(sale => {
+            const jsonItems = JSON.stringify(sale.items);
+            // Escape double quotes inside the JSON by doubling them, then wrap the whole thing in quotes.
+            const csvItems = `"${jsonItems.replace(/"/g, '""')}"`;
+
+            const row = [
+                sale.id,
+                sale.date,
+                sale.subtotal,
+                sale.tax,
+                sale.total,
+                csvItems
+            ];
+            return row.join(',');
+        });
+
+        let csvContent = "data:text/csv;charset=utf-8,"
+            + headers.join(",") + "\n"
+            + salesCsvRows.join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "sales_history.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("Sales history exported.", "success");
+      }
+
+      // Import Sales from CSV
+      function importSalesFromCSV() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv';
+        input.onchange = e => {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.onload = event => {
+            const csv = event.target.result;
+            try {
+              const importedSales = parseSalesCSV(csv);
+              if (confirm(`Importing ${importedSales.length} sales records will overwrite existing history. Continue?`)) {
+                sales = importedSales;
+                saveSales();
+                updateSalesSummary();
+                showToast("Sales history imported successfully.", "success");
+              }
+            } catch (error) {
+              console.error("CSV Parse Error:", error);
+              showToast("Failed to import CSV. Please check the file format.", "error");
+            }
+          };
+          reader.readAsText(file);
+        };
+        input.click();
+      }
+
+      function parseSalesCSV(csv) {
+          const lines = csv.trim().split(/\r\n|\n/);
+          const headers = lines.shift().split(',');
+          
+          if (headers.join(',') !== 'id,date,subtotal,tax,total,items') {
+              throw new Error("Invalid CSV header");
+          }
+
+          return lines.map(line => {
+              // Regex to split by comma unless it's inside quotes
+              const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+              if (values.length !== headers.length) {
+                  console.warn("Skipping malformed CSV line:", line);
+                  return null;
+              }
+
+              try {
+                  // Un-escape the items field
+                  const itemsJson = values[5].
+                      // Remove starting and ending quotes
+                      replace(/^"|"$/g, '').
+                      // Replace doubled-up quotes with a single quote
+                      replace(/""/g, '"');
+
+                  const sale = {
+                      id: Number(values[0]),
+                      date: values[1],
+                      subtotal: Number(values[2]),
+                      tax: Number(values[3]),
+                      total: Number(values[4]),
+                      items: JSON.parse(itemsJson)
+                  };
+                  return sale;
+              } catch (e) {
+                  console.error("Error parsing sale object from CSV line:", line, e);
+                  return null;
+              }
+          }).filter(sale => sale !== null);
       }
 
       // Toast notification function
