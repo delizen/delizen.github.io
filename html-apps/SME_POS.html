@@ -570,6 +570,102 @@
       .close-btn:hover {
         color: var(--text-primary);
       }
+
+      /* Toast notification styles */
+      .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+      }
+
+      .toast {
+        background-color: var(--card-background);
+        color: var(--text-primary);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: var(--shadow-lg);
+        margin-top: 0.5rem;
+        border-left: 4px solid var(--primary-color);
+        animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+        max-width: 300px;
+      }
+
+      /* Tab Navigation */
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .tab {
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s ease;
+        color: var(--text-secondary);
+      }
+
+      .tab.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+      }
+
+      .tab:hover:not(.active) {
+        color: var(--text-primary);
+        border-bottom-color: var(--border-color);
+      }
+
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block !important;
+      }
+
+
+      .settings-section {
+        background-color: var(--card-background);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+      }
+
+      .settings-section h3 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(-100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
@@ -607,24 +703,6 @@
           <p id="current-date" class="header-date"></p>
         </div>
         <div class="flex gap-2">
-          <button id="add-product-btn" class="btn btn-secondary">
-            <svg
-              class="btn-icon"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              ></path>
-            </svg>
-            Add Product
-          </button>
           <button id="sales-history-btn" class="btn btn-outline">
             <svg
               class="btn-icon"
@@ -664,30 +742,36 @@
         </div>
       </div>
 
+
+
       <!-- Main POS Grid -->
-      <div class="pos-grid">
-        <!-- Products Section -->
-        <div class="card">
-          <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="text-xl font-bold">Products</h2>
-              <div class="flex gap-2">
-                <input
-                  type="text"
-                  id="product-search"
-                  class="form-control"
-                  placeholder="Search products..."
-                  style="width: 200px"
-                />
-                <button id="reset-products-btn" class="btn btn-outline btn-sm" title="Reset to default products">Reset Defaults</button>
-                <button id="clear-products-btn" class="btn btn-danger btn-sm" title="Clear all products">Clear Products</button>
+      <div class="tabs">
+        <div class="tab active" data-tab="pos-tab">POS</div>
+        <div class="tab" data-tab="settings-tab">Settings</div>
+      </div>
+      
+      <div id="pos-tab" class="tab-content active">
+        <div class="pos-grid">
+          <!-- Products Section -->
+          <div class="card">
+            <div class="p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Products</h2>
+                <div class="flex gap-2">
+                  <input
+                    type="text"
+                    id="product-search"
+                    class="form-control"
+                    placeholder="Search products..."
+                    style="width: 200px"
+                  />
+                </div>
+              </div>
+              <div id="product-grid" class="product-grid">
+                <!-- Products will be dynamically loaded here -->
               </div>
             </div>
-            <div id="product-grid" class="product-grid">
-              <!-- Products will be dynamically loaded here -->
-            </div>
           </div>
-        </div>
 
         <!-- Cart Section -->
         <div class="card">
@@ -720,7 +804,9 @@
                 <span id="subtotal">$0.00</span>
               </div>
               <div class="flex justify-between items-center mb-2">
-                <span class="font-medium">Tax (8.5%):</span>
+                <span class="font-medium">
+                  Tax (<span id="tax-rate-display">8.5</span>%):
+                </span>
                 <span id="tax">$0.00</span>
               </div>
               <div
@@ -769,6 +855,61 @@
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="settings-tab" class="tab-content">
+        <div style="background: yellow; padding: 10px; margin: 10px 0; border: 2px solid red;">
+          <h3>🔧 Settings Tab is Working!</h3>
+          <p>If you can see this, the Settings tab is displaying correctly.</p>
+        </div>
+        <div class="settings-section">
+          <h3>Product Management</h3>
+          <div class="settings-grid">
+            <button id="add-product-btn" class="btn btn-secondary">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Add Product
+            </button>
+            <button id="reset-products-btn" class="btn btn-outline">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Reset to Default Products
+            </button>
+            <button id="clear-products-btn" class="btn btn-danger">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Clear All Products
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Sales Management</h3>
+          <div class="settings-grid">
+            <button id="clear-history-btn" class="btn btn-danger">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Clear Sales History
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Tax Settings</h3>
+          <div class="settings-grid">
+            <button id="edit-tax-btn" class="btn btn-outline">
+              <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+              </svg>
+              Edit Tax Rate
+            </button>
           </div>
         </div>
       </div>
@@ -841,11 +982,31 @@
       </div>
     </div>
 
+    <!-- Tax Rate Modal -->
+    <div id="tax-rate-modal" class="modal hidden">
+      <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Edit Tax Rate</h3>
+          <button class="close-btn" id="close-tax-rate">&times;</button>
+        </div>
+        <form id="tax-rate-form">
+          <div class="form-group">
+            <label for="tax-rate-input" class="form-label">Tax Rate (%)</label>
+            <input type="number" id="tax-rate-input" class="form-control" min="0" max="30" step="0.1" required />
+            <p class="text-sm text-secondary mt-2">Enter a value between 0% and 30%</p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Checkout Modal -->
     <div id="checkout-modal" class="modal hidden">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title">Checkout</h3>
+          <h3 class="modal-title">Complete Sale</h3>
           <button class="close-btn" id="close-checkout">&times;</button>
         </div>
         <div id="checkout-summary">
@@ -867,12 +1028,14 @@
       const PRODUCTS_STORAGE_KEY = "sme_pos_products";
       const SALES_STORAGE_KEY = "sme_pos_sales";
       const THEME_STORAGE_KEY = "sme_pos_theme";
+      const TAX_RATE_STORAGE_KEY = "sme_pos_tax_rate";
 
       // Global variables
       let products = [];
       let cart = [];
       let sales = [];
       let darkMode = false;
+      let taxRate = 8.5; // Default tax rate
 
       // Default products
       const defaultProducts = [
@@ -891,6 +1054,7 @@
         loadThemePreference();
         loadProducts();
         loadSales();
+        loadTaxRate();
         updateDateTime();
         renderProducts();
         updateSalesSummary();
@@ -1090,12 +1254,32 @@
         updateCartTotals();
       }
 
+      // Tax rate management
+      function loadTaxRate() {
+        const savedTaxRate = localStorage.getItem(TAX_RATE_STORAGE_KEY);
+        if (savedTaxRate !== null) {
+          taxRate = parseFloat(savedTaxRate);
+        }
+        document.getElementById('tax-rate-display').textContent = taxRate.toFixed(1);
+      }
+
+      function saveTaxRate(newRate) {
+        taxRate = newRate;
+        localStorage.setItem(TAX_RATE_STORAGE_KEY, taxRate.toString());
+        document.getElementById('tax-rate-display').textContent = taxRate.toFixed(1);
+        // Update cart totals if cart has items
+        if (cart.length > 0) {
+          updateCartTotals();
+        }
+        showToast(`Tax rate updated to ${taxRate.toFixed(1)}%`);
+      }
+
       function updateCartTotals() {
         const subtotal = cart.reduce(
           (sum, item) => sum + item.price * item.quantity,
           0
         );
-        const tax = subtotal * 0.085; // 8.5% tax
+        const tax = subtotal * (taxRate / 100); // Use dynamic tax rate
         const total = subtotal + tax;
 
         document.getElementById("subtotal").textContent = `$${subtotal.toFixed(
@@ -1114,7 +1298,7 @@
           (sum, item) => sum + item.price * item.quantity,
           0
         );
-        const tax = subtotal * 0.085;
+        const tax = subtotal * (taxRate / 100);
         const total = subtotal + tax;
 
         summary.innerHTML = `
@@ -1157,7 +1341,7 @@
           (sum, item) => sum + item.price * item.quantity,
           0
         );
-        const tax = subtotal * 0.085;
+        const tax = subtotal * (taxRate / 100);
         const total = subtotal + tax;
 
         const sale = {
@@ -1251,12 +1435,38 @@
         modal.classList.remove("hidden");
       }
 
+
       // Event listeners
       function setupEventListeners() {
         // Theme toggle
         document
           .getElementById("theme-toggle")
           .addEventListener("click", toggleTheme);
+
+        // Tax rate edit
+        document
+          .getElementById("edit-tax-btn")
+          .addEventListener("click", function() {
+            document.getElementById("tax-rate-input").value = taxRate;
+            document.getElementById("tax-rate-modal").classList.remove("hidden");
+          });
+
+        // Tax rate form submission
+        document
+          .getElementById("tax-rate-form")
+          .addEventListener("submit", function(e) {
+            e.preventDefault();
+            const newRate = parseFloat(document.getElementById("tax-rate-input").value);
+            saveTaxRate(newRate);
+            document.getElementById("tax-rate-modal").classList.add("hidden");
+          });
+
+        // Close tax rate modal
+        document
+          .getElementById("close-tax-rate")
+          .addEventListener("click", function() {
+            document.getElementById("tax-rate-modal").classList.add("hidden");
+          });
 
         // Product search
         document
@@ -1365,6 +1575,82 @@
             e.target.classList.add("hidden");
           }
         });
+
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            console.log('Tab clicked:', tab.textContent.trim());
+            
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => {
+              c.classList.remove('active');
+              c.style.display = 'none';
+            });
+            
+            // Add active class to clicked tab and corresponding content
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            const targetContent = document.getElementById(tabId);
+            
+            if (targetContent) {
+              targetContent.classList.add('active');
+              targetContent.style.display = 'block';
+              console.log('Tab content activated:', tabId);
+            } else {
+              console.error('Tab content not found:', tabId);
+            }
+          });
+        });
+
+        // Settings tab event listeners
+        document.getElementById('clear-history-btn').addEventListener('click', clearSalesHistory);
+        document.getElementById('reset-products-btn').addEventListener('click', () => {
+          if (confirm("Reset products to defaults? This will replace your catalog.")) {
+            resetProducts();
+            showToast("Products reset to defaults.", 'success');
+          }
+        });
+        document.getElementById('clear-products-btn').addEventListener('click', () => {
+          if (confirm("Clear all products? This cannot be undone.")) {
+            clearAllProducts();
+            showToast("All products cleared.", 'success');
+          }
+        });
+      }
+
+      // Clear Sales History function
+      function clearSalesHistory() {
+        if (confirm('Are you sure you want to clear all sales history? This cannot be undone.')) {
+          sales = [];
+          localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(sales));
+          updateSalesSummary();
+          showToast('Sales history cleared successfully', 'success');
+        }
+      }
+
+      // Toast notification function
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        // Trigger animation
+        setTimeout(() => {
+          toast.classList.add('show');
+        }, 10);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 300);
+        }, 3000);
       }
 
       // Initialize the app when the page loads
@@ -1372,3 +1658,4 @@
     </script>
   </body>
 </html>
+
