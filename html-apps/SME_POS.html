@@ -890,6 +890,18 @@
                 </svg>
                 Clear All Products
               </button>
+              <button id="export-products-btn" class="btn btn-outline">
+                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Export All Products CSV
+              </button>
+              <button id="import-products-btn" class="btn btn-outline">
+                  <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                  </svg>
+                  Import All Products CSV
+              </button>
             </div>
           </div>
 
@@ -918,13 +930,19 @@
           </div>
 
           <div class="settings-section">
-            <h3>Tax Settings</h3>
+            <h3>General Settings</h3>
             <div class="settings-grid">
               <button id="edit-tax-btn" class="btn btn-outline">
                 <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                 </svg>
                 Edit Tax Rate
+              </button>
+              <button id="set-company-name-btn" class="btn btn-outline">
+                <svg class="btn-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h2M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                Set Company Name
               </button>
             </div>
           </div>
@@ -1019,6 +1037,26 @@
       </div>
     </div>
 
+    <!-- Company Name Modal -->
+    <div id="company-name-modal" class="modal hidden">
+      <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Set Company Name</h3>
+          <button class="close-btn" id="close-company-name">&times;</button>
+        </div>
+        <form id="company-name-form">
+          <div class="form-group">
+            <label for="company-name-input" class="form-label">Company Name</label>
+            <input type="text" id="company-name-input" class="form-control" required />
+            <p class="text-sm text-secondary mt-2">This will be shown on the main header.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Checkout Modal -->
     <div id="checkout-modal" class="modal hidden">
       <div class="modal-content">
@@ -1046,6 +1084,7 @@
       const SALES_STORAGE_KEY = "sme_pos_sales";
       const THEME_STORAGE_KEY = "sme_pos_theme";
       const TAX_RATE_STORAGE_KEY = "sme_pos_tax_rate";
+      const COMPANY_NAME_STORAGE_KEY = "sme_pos_company_name";
 
       // Global variables
       let products = [];
@@ -1053,6 +1092,7 @@
       let sales = [];
       let darkMode = false;
       let taxRate = 8.5; // Default tax rate
+      let companyName = "";
 
       // Default products
       const defaultProducts = [
@@ -1072,9 +1112,11 @@
         loadProducts();
         loadSales();
         loadTaxRate();
+        loadCompanyName();
         updateDateTime();
         renderProducts();
         updateSalesSummary();
+        updateCompanyUI();
         setupEventListeners();
       }
 
@@ -1619,6 +1661,27 @@
         });
         document.getElementById('export-sales-btn').addEventListener('click', exportSalesToCSV);
         document.getElementById('import-sales-btn').addEventListener('click', importSalesFromCSV);
+
+        // Company Name Modal
+        document.getElementById('set-company-name-btn').addEventListener('click', () => {
+          document.getElementById('company-name-input').value = companyName;
+          document.getElementById('company-name-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-company-name').addEventListener('click', () => {
+          document.getElementById('company-name-modal').classList.add('hidden');
+        });
+
+        document.getElementById('company-name-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const newName = document.getElementById('company-name-input').value;
+          saveCompanyName(newName);
+          document.getElementById('company-name-modal').classList.add('hidden');
+        });
+
+        // Product Import/Export
+        document.getElementById('export-products-btn').addEventListener('click', exportProductsToCSV);
+        document.getElementById('import-products-btn').addEventListener('click', importProductsFromCSV);
       }
 
       // Clear Sales History function
@@ -1629,6 +1692,92 @@
           updateSalesSummary();
           showToast('Sales history cleared successfully', 'success');
         }
+      }
+
+      // Company Name Management
+      function loadCompanyName() {
+        const savedName = localStorage.getItem(COMPANY_NAME_STORAGE_KEY);
+        if (savedName) {
+          companyName = savedName;
+        }
+      }
+
+      function saveCompanyName(name) {
+        companyName = name;
+        localStorage.setItem(COMPANY_NAME_STORAGE_KEY, companyName);
+        updateCompanyUI();
+        showToast("Company name updated.", "success");
+      }
+
+      function updateCompanyUI() {
+        const titleElement = document.querySelector('.header-title');
+        if (companyName) {
+          titleElement.textContent = `SME POS (${companyName})`;
+        } else {
+          titleElement.textContent = 'SME POS';
+        }
+      }
+
+      // Product CSV Export
+      function exportProductsToCSV() {
+        if (products.length === 0) {
+            showToast("No products to export.", "warning");
+            return;
+        }
+        const headers = ["id", "name", "price", "category"];
+        const productsCsvRows = products.map(p => [p.id, p.name, p.price, p.category].join(','));
+        let csvContent = "data:text/csv;charset=utf-8,"
+            + headers.join(",") + "\n"
+            + productsCsvRows.join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "products_catalog.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("Product catalog exported.", "success");
+      }
+
+      // Product CSV Import
+      function importProductsFromCSV() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = event => {
+                try {
+                    const importedProducts = parseProductsCSV(event.target.result);
+                    if (confirm(`Importing ${importedProducts.length} products will overwrite your current catalog. Continue?`)) {
+                        products = importedProducts;
+                        saveProducts();
+                        renderProducts();
+                        showToast("Products imported successfully.", "success");
+                    }
+                } catch (error) {
+                    console.error("Product CSV Parse Error:", error);
+                    showToast("Failed to import products. Check file format.", "error");
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+      }
+
+      function parseProductsCSV(csv) {
+        const lines = csv.trim().split(/\r\n|\n/);
+        const headers = lines.shift().split(',');
+        if (headers.join(',') !== 'id,name,price,category') {
+            throw new Error("Invalid product CSV header");
+        }
+        return lines.map(line => {
+            const [id, name, price, category] = line.split(',');
+            return { id: Number(id), name, price: Number(price), category };
+        });
       }
 
       // Export Sales to CSV
@@ -1662,8 +1811,9 @@
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
+        const fileName = companyName ? `${companyName}_sales_history.csv` : "sales_history.csv";
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "sales_history.csv");
+        link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
